@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PicShot Studio — Long-Term Contract Feedback</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+  :root{
+    --orange-1:#FDB813;
+    --orange-2:#F7931E;
+    --orange-3:#EF7F1A;
+    --black:#141414;
+    --ink:#1c1c1c;
+    --paper:#FFFFFF;
+    --paper-warm:#FFFBF5;
+    --line:#EAE2D6;
+    --muted:#8a8378;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    overflow-x:hidden;
+    overflow-y:auto;
+    position:relative;
+    background:
+      radial-gradient(1000px 800px at 85% -15%, rgba(253,184,19,0.20), transparent 60%),
+      radial-gradient(800px 700px at -10% 110%, rgba(239,127,26,0.14), transparent 60%),
+      var(--paper-warm);
+  }
+  /* ---------- Floating slot-symbol background art — the studio's actual
+     craft (game art references) instead of generic blobs or sparkles ---------- */
+  .glyph-layer{ position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+  .glyph{
+    position:absolute;
+    font-family:'Sora',sans-serif;
+    font-weight:800;
+    color:var(--orange-2);
+    opacity:.10;
+    animation:glyphFloat 12s ease-in-out infinite;
+  }
+  .glyph.star{ font-size:120px; top:6%; left:6%; animation-duration:14s; }
+  .glyph.seven{ font-size:170px; top:56%; left:2%; animation-duration:17s; animation-delay:1s; }
+  .glyph.bar{ font-size:90px; top:10%; right:8%; animation-duration:13s; animation-delay:.5s; }
+  .glyph.cherry{ font-size:130px; bottom:4%; right:6%; animation-duration:15.5s; animation-delay:2s; }
+  .glyph.diamond{ font-size:100px; top:38%; right:20%; animation-duration:16s; animation-delay:1.4s; }
+  .glyph.bell{ font-size:110px; bottom:10%; left:16%; animation-duration:14.5s; animation-delay:.8s; }
+  @keyframes glyphFloat{
+    0%,100%{ transform:translateY(0) rotate(0deg); }
+    50%{ transform:translateY(-22px) rotate(6deg); }
+  }
+  @media (max-width:640px){ .glyph{ display:none; } }
+
+  /* ---------- Progress: slim shimmering strip ---------- */
+  .progress-track{
+    position:fixed; top:0; left:0; right:0;
+    height:5px;
+    background:rgba(234,226,214,0.6);
+    z-index:50;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--orange-1),var(--orange-3),var(--orange-1));
+    background-size:200% 100%;
+    animation:shimmer 2.2s linear infinite;
+    transition:width .45s cubic-bezier(.4,0,.2,1);
+  }
+  @keyframes shimmer{ to{ background-position:-200% 0; } }
+
+  .brand-mark{ position:fixed; top:22px; left:26px; display:flex; align-items:center; gap:8px; z-index:40; }
+  .brand-mark img{ height:30px; width:auto; display:block; }
+  .step-counter{
+    position:fixed; top:26px; right:26px;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px; font-weight:600; color:var(--muted); letter-spacing:0.3px;
+    z-index:40;
+  }
+  .back-arrow{
+    position:fixed; bottom:26px; left:26px;
+    width:42px; height:42px; border-radius:50%;
+    border:1.5px solid var(--line); background:var(--paper); color:var(--black);
+    font-size:16px; display:none; align-items:center; justify-content:center;
+    cursor:pointer; box-shadow:0 6px 16px rgba(20,20,20,0.06);
+    transition:border-color .15s ease, transform .15s ease;
+    z-index:40;
+  }
+  .back-arrow.show{ display:flex; }
+  .back-arrow:hover{ border-color:var(--orange-2); transform:translateY(-1px); }
+
+  .stage{ min-height:100vh; height:auto; display:flex; align-items:center; justify-content:center; padding:100px 24px; position:relative; z-index:1; }
+  .screen{ display:none; width:100%; max-width:600px; }
+  .screen.active{ display:block; }
+
+  /* ---------- Cabinet card: gold trim + twinkling marquee bulbs, like an
+     arcade / slot-machine screen bezel. The whole cabinet — bulbs, handle
+     and screen content — reacts together on every question change, so the
+     transition reads as the machine itself ticking over, not a popup. ---------- */
+  .cabinet{ position:relative; padding:5px; border-radius:32px; background:linear-gradient(135deg,var(--orange-1),var(--orange-3),var(--orange-1)); box-shadow:0 30px 70px rgba(20,20,20,0.16); }
+  .cabinet.jackpot{ animation:jackpotFlash .65s ease; }
+  @keyframes jackpotFlash{
+    0%,100%{ box-shadow:0 30px 70px rgba(20,20,20,0.16); }
+    30%,70%{ box-shadow:0 30px 70px rgba(20,20,20,0.16), 0 0 0 9px rgba(253,184,19,0.5); }
+  }
+  .cabinet.jackpot .bulb{ animation-duration:.28s !important; }
+  .bulbs{ position:absolute; inset:0; z-index:2; pointer-events:none; }
+  .bulb{
+    position:absolute; width:6px; height:6px; border-radius:50%;
+    background:#FFE9A8; box-shadow:0 0 6px 1px rgba(253,184,19,0.9);
+    animation:bulbTwinkle 1.6s ease-in-out infinite;
+  }
+  @keyframes bulbTwinkle{ 0%,100%{ opacity:.25; } 50%{ opacity:1; } }
+  .bulbs.flash .bulb{ animation-duration:.22s !important; }
+
+  /* Handle physically attached to the cabinet's own frame — pulls every
+     time you move to another question, like you're really spinning it */
+  .cab-lever{ position:absolute; top:8px; right:-24px; width:18px; height:128px; z-index:5; pointer-events:none; }
+  .cab-lever .rod{
+    position:absolute; left:6px; top:10px; width:5px; height:90px; border-radius:4px;
+    background:linear-gradient(180deg,#f0f0f0,#9c9c9c);
+    transform-origin:bottom center;
+    transition:transform .28s cubic-bezier(.3,1.5,.4,1);
+    box-shadow:0 2px 6px rgba(0,0,0,.15);
+  }
+  .cab-lever .knob{
+    position:absolute; left:-5px; top:0; width:18px; height:18px; border-radius:50%;
+    background:radial-gradient(circle at 34% 28%,#ff8f7a,#dd3a26 72%);
+    box-shadow:0 5px 12px rgba(0,0,0,.28);
+    transform-origin:9px 100px;
+    transition:transform .28s cubic-bezier(.3,1.5,.4,1);
+  }
+  .cab-lever .base{ position:absolute; left:-1px; bottom:-2px; width:20px; height:14px; border-radius:5px; background:linear-gradient(180deg,#d8d8d8,#a2a2a2); }
+  .cab-lever.pulled .rod, .cab-lever.pulled .knob{ transform:rotate(-30deg); }
+  @media (max-width:820px){ .cab-lever{ display:none; } }
+
+  /* The whole card IS a slot reel drum at all times — not just during a
+     transition. .card is the metal cylinder itself: brushed vertical
+     banding for roundness, a bright rim along the top edge, two rivets
+     holding the nameplate on. .card-inner is the recessed cream window
+     set into that drum where the actual question sits — permanently
+     styled like you're looking through the machine's glass, not just
+     during the spin (see below). */
+  .card{
+    position:relative;
+    border-radius:34px;
+    padding:20px 22px 24px 22px;
+    text-align:center;
+    overflow:visible;
+    z-index:1;
+    background:
+      radial-gradient(130% 65% at 28% 0%, rgba(255,255,255,.6), rgba(255,255,255,0) 55%),
+      linear-gradient(90deg, #A15C05 0%, #FFE9A8 9%, #FDB813 22%, #F7931E 50%, #FDB813 78%, #FFE9A8 91%, #A15C05 100%),
+      linear-gradient(180deg, #FFE9A8, #EF7F1A 92%);
+    box-shadow:
+      0 30px 60px rgba(20,20,20,.2),
+      inset 0 2px 2px rgba(255,255,255,.55),
+      inset 0 -12px 18px rgba(0,0,0,.18);
+  }
+  .card::before, .card::after{
+    content:"";
+    position:absolute; top:16px; width:7px; height:7px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #FFF3D6, #B97A17 75%);
+    box-shadow:0 1px 2px rgba(0,0,0,.35), inset 0 -1px 1px rgba(0,0,0,.25);
+    pointer-events:none; z-index:2;
+  }
+  .card::before{ left:18px; }
+  .card::after{ right:18px; }
+  /* Reel window: this recessed nameplate never moves. When you move to
+     another question, it fills with three real slot reels that actually
+     spin through symbols — several full rotations — and stop left-to-right
+     like a real machine, then lift away to reveal the next question
+     already sitting underneath. */
+  .card-inner{
+    position:relative;
+    overflow:hidden;
+    background:var(--paper);
+    border-radius:22px;
+    padding:40px 32px;
+    box-shadow:
+      inset 0 4px 10px rgba(20,20,20,.22),
+      inset 0 -3px 6px rgba(255,255,255,.55);
+  }
+  /* The reels now fill the entire nameplate window — three full-height
+     columns, each showing three stacked symbols at rest. The middle row
+     is the payline (highlighted band): all three reels are always steered
+     to land on the SAME symbol there, so every question change ends in a
+     little "win" moment before the next question is revealed. */
+  .spin-fx{
+    position:absolute; inset:0; z-index:10;
+    background:var(--paper);
+    display:flex; align-items:stretch; justify-content:center; gap:10px;
+    opacity:0; transition:opacity .22s ease;
+  }
+  .spin-fx.show{ opacity:1; }
+  .spin-fx.landing{ opacity:0; transition:opacity .3s ease; }
+  .spin-fx::before{
+    content:"";
+    position:absolute; left:4px; right:4px; top:33.333%; height:33.334%;
+    background:linear-gradient(180deg, rgba(253,184,19,0) 0%, rgba(253,184,19,.16) 50%, rgba(253,184,19,0) 100%);
+    border-top:2px solid rgba(239,127,26,.5);
+    border-bottom:2px solid rgba(239,127,26,.5);
+    pointer-events:none; z-index:1;
+  }
+  .spin-fx.win::before{ animation:paylineGlow .55s ease; }
+  @keyframes paylineGlow{
+    0%,100%{ background:linear-gradient(180deg, rgba(253,184,19,0) 0%, rgba(253,184,19,.16) 50%, rgba(253,184,19,0) 100%); }
+    40%{ background:linear-gradient(180deg, rgba(253,184,19,.12) 0%, rgba(253,184,19,.55) 50%, rgba(253,184,19,.12) 100%); }
+  }
+  .spin-col{
+    flex:1 1 0; min-width:0; height:100%; overflow:hidden; border-radius:12px;
+    background:linear-gradient(180deg,#FFF8EA,#FFFCF6 45%,#FFFCF6 55%,#FFF8EA);
+    border:2px solid #F0DFB6;
+    box-shadow:inset 0 14px 18px -12px rgba(20,20,20,0.28), inset 0 -14px 18px -12px rgba(20,20,20,0.28);
+    position:relative;
+  }
+  /* Motion itself is driven from JS with the Web Animations API (each reel
+     eases from a fast spin into a soft, decelerating stop, staggered
+     left-to-right, always coming to rest with the same symbol in the
+     middle payline slot) — this file only supplies the little tactile
+     "settle" bounce once a reel's own animation reports it has finished. */
+  .spin-col-inner{ display:flex; flex-direction:column; align-items:center; }
+  .sym{ width:100%; display:flex; align-items:center; justify-content:center; }
+  .sym.emoji{ font-size:clamp(28px,6.5vw,46px); line-height:1; }
+  /* Brand-name symbols (PIC / SHOT / STUDIO) are a decorative badge graphic
+     — a gradient-filled, bordered plate with little ornamental flourish
+     lines in the corners — not plain styled text. */
+  .sym.word{ padding:4px 6px; }
+  .sym.word .badge-svg{ width:92%; height:auto; display:block; filter:drop-shadow(0 4px 8px rgba(180,110,10,.35)); }
+  .spin-col.stopped{ animation:reelStop .26s ease; }
+  @keyframes reelStop{ 0%{ transform:scaleY(1); } 40%{ transform:scaleY(.94) translateY(3px); } 100%{ transform:scaleY(1) translateY(0); } }
+  .card-inner.landed{ animation:landPop .32s ease; }
+  @keyframes landPop{ 0%{ transform:scale(1.04); } 55%{ transform:scale(.98); } 100%{ transform:scale(1); } }
+
+  /* ---------- Gate transition: every question-to-question change AFTER
+     the opening spin uses this instead — two press panels slide down/up
+     from the top and bottom edges, meet in the middle to fully cover the
+     nameplate (like a vault door / stamping press), the next question
+     swaps in underneath while hidden, then the panels retract to reveal
+     it. Quicker and quieter than a full reel spin, so it doesn't feel like
+     gambling machinery running on every single question. ---------- */
+  .gate-fx{
+    position:absolute; inset:0; z-index:10;
+    overflow:hidden; border-radius:inherit;
+    pointer-events:none;
+  }
+  .gate-panel{
+    position:absolute; left:-2px; right:-2px; height:53%;
+    background:
+      repeating-linear-gradient(180deg, rgba(0,0,0,.05) 0 2px, transparent 2px 7px),
+      linear-gradient(180deg, #FFE9A8 0%, var(--orange-1) 30%, var(--orange-3) 75%, #B5720C 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.35),
+      0 8px 20px rgba(0,0,0,.28);
+  }
+  .gate-top{ top:-2px; border-radius:0 0 12px 12px; transform:translateY(-100%); }
+  .gate-bottom{ bottom:-2px; border-radius:12px 12px 0 0; transform:translateY(100%); }
+  .gate-fx::after{
+    content:"";
+    position:absolute; left:8%; right:8%; top:50%; height:4px; transform:translateY(-50%);
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.85), transparent);
+    opacity:0;
+  }
+  .gate-fx.sealed::after{ opacity:1; }
+  /* A brighter glow on the panels while they retract for the final
+     screen only — reads as a little "win reveal" rather than a plain
+     everyday question change. */
+  .gate-fx.win-open .gate-panel{
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.6),
+      0 0 26px 6px rgba(253,184,19,.55),
+      0 8px 20px rgba(0,0,0,.28);
+  }
+
+  /* ---------- Jackpot popup: a brief celebratory badge that flies in over
+     the finished ticket before settling into the plain thank-you screen
+     underneath. Text is a thank-you line, not literal "jackpot" wording —
+     this stays a feedback form, just dressed in the arcade style. ---------- */
+  .jackpot-pop{
+    position:absolute; inset:0; z-index:11;
+    display:flex; align-items:center; justify-content:center;
+    pointer-events:none;
+  }
+  .jackpot-pop svg{ width:88%; max-width:320px; height:auto; filter:drop-shadow(0 14px 26px rgba(180,110,10,.5)); }
+  .q-kicker{ display:block; font-family:'Space Grotesk',sans-serif; font-size:12.5px; font-weight:700; letter-spacing:1.6px; text-transform:uppercase; color:var(--orange-3); margin-bottom:14px; }
+  .q-hint{ font-size:14.5px; line-height:1.55; color:#6d675e; margin:-22px auto 28px auto; max-width:520px; }
+  .choice-other{ margin-top:10px; font-size:15px; }
+  [data-multi] .q-big{ margin-bottom:26px; }
+  [data-multi] .choice-list{ gap:7px; }
+  [data-multi] .choice-btn{ padding:10px 16px; font-size:14px; }
+  [data-multi] .screen-actions{ margin-top:18px; }
+  .q-big{ font-family:'Sora',sans-serif; font-size:clamp(22px,3.6vw,30px); line-height:1.28; font-weight:800; letter-spacing:-0.4px; color:var(--black); margin:0 0 34px 0; }
+  .q-big .accent{ background:linear-gradient(120deg,var(--orange-1),var(--orange-2),var(--orange-3)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+  /* ---------- Rating: coin tokens instead of plain circles ---------- */
+  .scale-big{ display:flex; justify-content:center; flex-wrap:wrap; gap:11px; margin-bottom:14px; position:relative; }
+  .scale-circle{
+    position:relative;
+    width:52px; height:52px;
+    border-radius:50%;
+    border:2px solid #E9D9AE;
+    background:radial-gradient(circle at 34% 28%, #FFFDF8, #FFF3DE 62%, #F3D598 100%);
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px; color:#7a5a1e;
+    cursor:pointer;
+    box-shadow:inset 0 -3px 5px rgba(180,140,50,0.18), 0 2px 5px rgba(20,20,20,0.05);
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .scale-circle:hover{ transform:translateY(-3px); border-color:var(--orange-2); }
+  .scale-circle.selected{
+    border-color:transparent;
+    background:radial-gradient(circle at 34% 28%, #FFE79A, var(--orange-1) 55%, var(--orange-3) 100%);
+    color:#fff;
+    box-shadow:0 10px 22px rgba(239,127,26,0.42), inset 0 -3px 6px rgba(140,60,0,0.25);
+    animation:coinPop .35s ease;
+  }
+  @keyframes coinPop{
+    0%{transform:scale(.7) rotateY(0deg);}
+    60%{transform:scale(1.2) rotateY(180deg);}
+    100%{transform:scale(1) rotateY(360deg);}
+  }
+  .scale-endlabels{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--muted); margin:0 4px; }
+  .scale-big.disabled-scale{ opacity:.35; pointer-events:none; }
+
+  /* ---------- "Art only" opt-out: shown only on the animation question so
+     a client who never had animation work done can say so instead of being
+     forced to rate something that doesn't apply to them. ---------- */
+  .na-check{
+    display:flex; align-items:flex-start; gap:9px;
+    margin:18px auto 0 auto; max-width:400px;
+    font-size:13px; line-height:1.45; color:var(--muted); text-align:left; cursor:pointer;
+    user-select:none;
+  }
+  .na-check input[type="checkbox"]{ margin-top:2px; width:16px; height:16px; accent-color:var(--orange-3); cursor:pointer; flex-shrink:0; }
+  .na-continue-wrap{ margin-top:18px !important; }
+
+  /* ---------- Low-rating follow-up: an optional explanation field that
+     appears only when the client picks a low score (1-3 on the 1-5 scale),
+     so we can learn why without forcing anyone to write an essay on every
+     question. ---------- */
+  .low-rating-note{
+    display:none;
+    margin-top:18px; padding:16px 16px 14px 16px;
+    background:var(--paper-warm);
+    border:1.5px dashed #E4CFA3;
+    border-radius:14px;
+    text-align:left;
+  }
+  .low-rating-note.show{ display:block; animation:noteIn .3s ease; }
+  @keyframes noteIn{ from{ opacity:0; transform:translateY(-6px); } to{ opacity:1; transform:translateY(0); } }
+  .lrn-label{ display:block; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:13.5px; color:var(--orange-3); margin-bottom:8px; }
+  .lrn-optional{ font-weight:500; color:var(--muted); text-transform:none; letter-spacing:0; }
+  .lrn-textarea{ text-align:left; border:none; border-bottom:2px solid var(--line); min-height:64px; padding:6px 2px; }
+  .low-rating-note .screen-actions{ margin-top:14px; align-items:flex-start; }
+
+  /* ---------- Multiple-choice screens (e.g. the "next project" question) --*/
+  .choice-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:6px; }
+  .choice-btn{
+    width:100%; text-align:left; padding:14px 18px; border-radius:14px;
+    border:2px solid #E9D9AE; background:var(--paper-warm);
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14.5px; color:var(--ink);
+    cursor:pointer; transition:transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+  }
+  .choice-btn:hover{ transform:translateY(-2px); border-color:var(--orange-2); }
+  .choice-btn.selected{
+    border-color:transparent; color:#fff;
+    background:linear-gradient(120deg,var(--orange-1),var(--orange-3));
+    box-shadow:0 10px 22px rgba(239,127,26,0.32);
+  }
+
+  /* burst particles spawned on rating select */
+  .spark-particle{
+    position:fixed; width:8px; height:8px; border-radius:50%;
+    pointer-events:none; z-index:80;
+  }
+
+  /* ---------- Text / name screens ---------- */
+  .q-textarea, .q-input{
+    width:100%; border:none; border-bottom:2.5px solid var(--line); padding:10px 6px;
+    font-size:17px; font-family:inherit; background:transparent; color:var(--ink);
+    outline:none; text-align:center; resize:vertical;
+  }
+  .q-textarea{ min-height:90px; }
+  .q-textarea:focus, .q-input:focus{ border-bottom-color:var(--orange-3); }
+  .q-input.input-error{ animation:inputShake .38s ease; border-bottom-color:#E4572E; }
+  @keyframes inputShake{
+    0%,100%{ transform:translateX(0); }
+    20%{ transform:translateX(-6px); }
+    40%{ transform:translateX(5px); }
+    60%{ transform:translateX(-4px); }
+    80%{ transform:translateX(3px); }
+  }
+  .q-textarea::placeholder, .q-input::placeholder{ color:#c9beac; }
+  .screen-actions{ display:flex; flex-direction:column; align-items:center; gap:14px; margin-top:30px; }
+  .btn{ border:none; font-family:inherit; font-weight:700; font-size:15px; padding:14px 30px; border-radius:12px; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease; }
+  .btn-primary{ color:#fff; background:linear-gradient(120deg,var(--orange-1),var(--orange-3)); box-shadow:0 10px 24px rgba(239,127,26,0.32); }
+  .btn-primary:hover{ transform:translateY(-1px); }
+  .skip-link{ background:none; border:none; font-family:inherit; font-size:13.5px; font-weight:600; color:var(--muted); cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+  .skip-link:hover{ color:var(--orange-3); }
+
+  /* ---------- Cover: big glossy "spin button" CTA ---------- */
+  .cover-card{ text-align:center; }
+  .cover-mark{
+    width:72px; height:72px; margin:0 auto 20px auto; border-radius:50%;
+    background:radial-gradient(circle at 34% 28%, #FFE79A, var(--orange-1) 55%, var(--orange-3) 100%);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 16px 34px rgba(239,127,26,0.4), inset 0 -4px 8px rgba(140,60,0,0.2);
+    animation:coverPulse 2.6s ease-in-out infinite;
+  }
+  @keyframes coverPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.06); } }
+  .cover-mark svg{ width:32px; height:32px; }
+  .cover-card .q-big{ font-size:clamp(26px,4.2vw,38px); }
+  .cover-sub{ font-size:16px; color:#5a554d; line-height:1.6; max-width:440px; margin:0 auto 30px auto; }
+
+  /* ---------- Cover logo slot: reserved space for the real PicShot Studio
+     logo. Drop a file named "picshot-logo.png" next to this HTML file (or
+     into the same GitHub folder) and it swaps in automatically — until
+     then this dashed placeholder shows so the spot is never empty/broken.
+     Cover screen only, by design — no other screen has a logo slot. ---------- */
+  .cover-logo{ position:relative; width:104px; height:104px; margin:0 auto 22px auto; }
+  .cover-logo-img{ display:none; width:100%; height:100%; object-fit:contain; }
+  .cover-logo-placeholder{
+    width:100%; height:100%; border-radius:22px;
+    border:2px dashed #E4CFA3;
+    background:var(--paper-warm);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  }
+  .cover-logo-ph-text{ font-family:'Space Grotesk',sans-serif; font-weight:800; font-size:12px; letter-spacing:1.5px; color:var(--orange-3); text-transform:uppercase; }
+  .cover-logo-ph-hint{ font-size:10px; color:var(--muted); font-family:monospace; }
+  @media (max-width:640px){ .cover-logo{ width:80px; height:80px; margin-bottom:16px; } }
+
+  /* ---------- Final: arcade "WIN TICKET" ---------- */
+  .win-burst{ position:relative; width:100%; height:0; }
+  .win-burst svg{ position:absolute; top:-30px; left:50%; transform:translateX(-50%); width:220px; height:220px; opacity:.55; pointer-events:none; }
+  .ticket{
+    position:relative;
+    text-align:left;
+    margin:26px 0 0 0;
+    padding:22px 22px 18px 22px;
+    border:2px dashed #E4CFA3;
+    border-radius:16px;
+    background:#FFFCF5;
+  }
+  .ticket::before, .ticket::after{
+    content:"";
+    position:absolute;
+    width:22px; height:22px;
+    border-radius:50%;
+    background:var(--paper-warm);
+    box-shadow:inset 0 0 0 2px #E4CFA3;
+    top:50%; transform:translateY(-50%);
+  }
+  .ticket::before{ left:-13px; }
+  .ticket::after{ right:-13px; }
+  .ticket-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .ticket-head span{ font-family:'Space Grotesk',sans-serif; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--orange-3); }
+  .recap-row{ display:flex; justify-content:space-between; gap:14px; padding:9px 0; border-bottom:1px dotted #DDCBA6; font-size:13.5px; }
+  .recap-row:last-child{ border-bottom:none; }
+  .recap-row .rq{ color:#57534b; }
+  .recap-row .ra{ font-family:'Space Grotesk',sans-serif; font-weight:700; color:var(--black); text-align:right; flex-shrink:0; max-width:55%; }
+  .recap-row .ra.muted{ font-weight:500; color:var(--muted); font-style:italic; font-family:inherit; }
+  .final-actions{ display:flex; flex-direction:column; align-items:center; gap:12px; margin-top:26px; }
+  .thanks-icon{
+    width:64px; height:64px; border-radius:50%;
+    background:radial-gradient(circle at 34% 28%, #FFE79A, var(--orange-1) 55%, var(--orange-3) 100%);
+    display:flex; align-items:center; justify-content:center; margin:0 auto 6px auto;
+    box-shadow:0 12px 26px rgba(239,127,26,0.35);
+  }
+  .thanks-icon svg{ width:30px; height:30px; }
+
+  /* ---------- Final screen only: a noticeably tighter layout so the whole
+     recap ticket (now 9 rating rows + comment) is much more likely to fit
+     in view without scrolling. The page still scrolls if it doesn't. ---------- */
+  [data-screen="final"] .card-inner{ padding:26px 24px 20px 24px; }
+  [data-screen="final"] .thanks-icon{ width:48px; height:48px; margin:0 auto 4px auto; }
+  [data-screen="final"] .thanks-icon svg{ width:22px; height:22px; }
+  [data-screen="final"] #finalHeading{ font-size:clamp(17px,2.4vw,22px); line-height:1.24; margin-bottom:2px !important; }
+  [data-screen="final"] .ticket{ margin:12px 0 0 0; padding:12px 16px 6px 16px; }
+  [data-screen="final"] .ticket-head{ margin-bottom:4px; }
+  [data-screen="final"] .recap-row{ padding:5px 0; font-size:12px; gap:10px; }
+  [data-screen="final"] .final-actions{ margin-top:14px; gap:8px; }
+
+  /* confetti (final screen celebration) */
+  .confetti-piece{ position:fixed; top:-24px; z-index:90; pointer-events:none; border-radius:2px; }
+
+  /* ---------- Success modal ---------- */
+  .modal-overlay{ position:fixed; inset:0; background:rgba(20,20,20,0.45); display:none; align-items:center; justify-content:center; z-index:100; padding:20px; }
+  .modal-overlay.show{ display:flex; }
+  .modal-card{ background:#fff; border-radius:24px; max-width:420px; width:100%; padding:38px 32px 32px 32px; text-align:center; box-shadow:0 30px 80px rgba(20,20,20,0.35); animation:modalIn .35s ease; }
+  @keyframes modalIn{ from{opacity:0; transform:translateY(18px) scale(.96);} to{opacity:1; transform:translateY(0) scale(1);} }
+  .modal-icon{ width:70px; height:70px; border-radius:50%; background:linear-gradient(135deg,var(--orange-1),var(--orange-3)); display:flex; align-items:center; justify-content:center; margin:0 auto 16px auto; box-shadow:0 10px 26px rgba(239,127,26,0.4); }
+  .modal-icon svg{ width:32px; height:32px; }
+  .modal-card h2{ margin:0 0 10px 0; font-size:21px; font-weight:800; color:var(--black); }
+  .modal-card p{ margin:0 0 22px 0; font-size:14px; color:#57534b; line-height:1.6; }
+
+  @media (max-width:640px){
+    .stage{ padding:80px 16px; min-height:100vh; height:auto; }
+    .card{ padding:14px 14px 18px 14px; border-radius:26px; }
+    .card-inner{ padding:28px 20px; border-radius:18px; }
+    .card::before, .card::after{ top:12px; width:6px; height:6px; }
+    .card::before{ left:14px; }
+    .card::after{ right:14px; }
+    .cabinet{ border-radius:26px; }
+    .brand-mark{ top:16px; left:16px; }
+    .brand-mark img{ height:24px; }
+    .step-counter{ top:20px; right:16px; font-size:12px; }
+    .back-arrow{ bottom:16px; left:16px; width:38px; height:38px; }
+    .scale-circle{ width:42px; height:42px; font-size:14px; }
+    .q-big{ font-size:clamp(20px,6vw,26px); }
+    .cover-card .q-big{ font-size:clamp(24px,7.5vw,30px); }
+    .recap-row{ flex-direction:column; gap:3px; }
+    .recap-row .ra{ text-align:left; max-width:100%; }
+  }
+</style>
+</head>
+<body>
+  <div class="glyph-layer" aria-hidden="true">
+    <span class="glyph star">★</span>
+    <span class="glyph seven">7</span>
+    <span class="glyph bar">▮▮▮</span>
+    <span class="glyph cherry">🍒</span>
+    <span class="glyph diamond">💎</span>
+    <span class="glyph bell">🔔</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="brand-mark">
+    <img src="picshot-logo.png" alt="PicShot Studio" onerror="this.style.display='none';">
+  </div>
+  <div class="step-counter" id="stepCounter"></div>
+  <button class="back-arrow" id="backArrow" onclick="prevScreen()" aria-label="Back">←</button>
+
+  <!-- Handle template, cloned onto every cabinet below so the lever is
+       physically part of the machine frame, not a separate floating
+       element -->
+  <template id="leverTpl">
+    <div class="cab-lever" aria-hidden="true"><div class="rod"></div><div class="knob"></div><div class="base"></div></div>
+  </template>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="burstGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FDB813"/>
+        <stop offset="100%" stop-color="#EF7F1A"/>
+      </linearGradient>
+      <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FFE9A8"/>
+        <stop offset="50%" stop-color="#FDB813"/>
+        <stop offset="100%" stop-color="#EF7F1A"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div class="stage">
+    <!-- 0: Cover -->
+    <section class="screen active" data-screen="cover">
+      <div class="cabinet">
+        <div class="bulbs" id="bulbsCover"></div>
+        <div class="card cover-card">
+          <div class="cover-logo">
+            <div class="cover-logo-placeholder" id="coverLogoPlaceholder">
+              <span class="cover-logo-ph-text">Logo</span>
+              <span class="cover-logo-ph-hint">picshot-logo.png</span>
+            </div>
+            <img class="cover-logo-img" src="picshot-logo.png" alt="PicShot Studio logo"
+                 onload="this.style.display='block'; document.getElementById('coverLogoPlaceholder').style.display='none';"
+                 onerror="this.style.display='none';">
+          </div>
+          <span class="q-kicker">PicShot Studio · Client Feedback</span>
+          <h1 class="q-big">Rate your <span class="accent">Long-Term Contract</span> experience</h1>
+          <p class="cover-sub">We&rsquo;d love to hear your feedback about our cooperation under the Long-Term Contract. Your opinion will help us understand what works well and how we can make our partnership even better.</p>
+          <button class="btn btn-primary" onclick="nextScreen()">Spin to Begin →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="screen" data-screen="scale" data-key="value_benefit" data-cat="Value" data-low="Not valuable at all" data-high="Extremely valuable">
+      <div class="cabinet"><div class="bulbs"></div>
+        <div class="card">
+          <span class="q-kicker">Value</span>
+          <h1 class="q-big">How valuable and beneficial have the Long-Term Contract and its terms been for you?</h1>
+          <div class="scale-big"></div>
+          <div class="scale-endlabels"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="screen" data-screen="scale" data-key="time_resources" data-cat="Efficiency" data-low="Not at all" data-high="To a great extent">
+      <div class="cabinet"><div class="bulbs"></div>
+        <div class="card">
+          <span class="q-kicker">Efficiency</span>
+          <h1 class="q-big">To what extent has the Long-Term Contract helped you optimize your time and resources?</h1>
+          <div class="scale-big"></div>
+          <div class="scale-endlabels"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="screen" data-screen="scale" data-key="team_comfort" data-cat="Collaboration" data-low="Very uncomfortable" data-high="Extremely comfortable">
+      <div class="cabinet"><div class="bulbs"></div>
+        <div class="card">
+          <span class="q-kicker">Collaboration</span>
+          <h1 class="q-big">How comfortable has your experience working with our team been under the Long-Term Contract?</h1>
+          <div class="scale-big"></div>
+          <div class="scale-endlabels"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="screen" data-screen="scale" data-key="pm_quality" data-cat="Project Management" data-low="Very poor" data-high="Excellent">
+      <div class="cabinet"><div class="bulbs"></div>
+        <div class="card">
+          <span class="q-kicker">Project Management</span>
+          <h1 class="q-big">How would you rate the quality of Project Management throughout our cooperation under the Long-Term Contract?</h1>
+          <div class="scale-big"></div>
+          <div class="scale-endlabels"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="screen" data-screen="scale" data-key="workflow" data-cat="Collaboration" data-low="Not effectively at all" data-high="Extremely effectively">
+      <div class="cabinet"><div class="bulbs"></div>
+        <div class="card">
+          <span class="q-kicker">Collaboration</span>
+          <h1 class="q-big">How effectively have we adapted our workflow to your needs?</h1>
+          <div class="scale-big"></div>
+          <div class="scale-endlabels"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="screen" data-screen="scale" data-key="expectations" data-cat="Overall Impression" data-low="Not at all" data-high="Fully met my expectations">
+      <div class="cabinet"><div class="bulbs"></div>
+        <div class="card">
+          <span class="q-kicker">Overall Impression</span>
+          <h1 class="q-big">To what extent has the Long-Term Contract met your expectations?</h1>
+          <div class="scale-big"></div>
+          <div class="scale-endlabels"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="screen" data-screen="choice" data-multi="1" data-key="benefits" data-cat="Benefits">
+      <div class="cabinet"><div class="bulbs"></div>
+        <div class="card">
+          <span class="q-kicker">Benefits</span>
+          <h1 class="q-big">What benefits of the Long-Term Contract have you noticed the most?</h1>
+          <p class="q-hint">Select all that apply.</p>
+          <div class="choice-list"></div>
+          <input class="q-input choice-other" type="text" placeholder="Something else? Tell us (optional)">
+          <div class="screen-actions">
+            <button class="btn btn-primary" onclick="nextScreen()">Continue →</button>
+            <button class="skip-link" onclick="nextScreen()">Skip this question</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="screen" data-screen="text" data-key="improvements" data-cat="Suggestions">
+      <div class="cabinet"><div class="bulbs"></div>
+        <div class="card">
+          <span class="q-kicker">Suggestions</span>
+          <h1 class="q-big">What would you like us to improve in our cooperation or add to the Long-Term Contract terms?</h1>
+          <p class="q-hint">We&rsquo;d appreciate any suggestions, recommendations, or additional comments. Nothing to add? Feel free to skip this question.</p>
+          <textarea class="q-textarea" placeholder="Type your thoughts… (optional)"></textarea>
+          <div class="screen-actions">
+            <button class="btn btn-primary" onclick="nextScreen()">Continue →</button>
+            <button class="skip-link" onclick="nextScreen()">Nothing to add — skip</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6: name -->
+    <section class="screen" data-screen="name">
+      <div class="cabinet"><div class="bulbs"></div>
+        <div class="card">
+          <span class="q-kicker">Almost done</span>
+          <h1 class="q-big">Last thing — tell us your company or project name</h1>
+          <input class="q-input" id="clientName" type="text" placeholder="Company or project name" required>
+          <div class="screen-actions">
+            <button class="btn btn-primary" onclick="submitName()">Continue →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7: final -->
+    <section class="screen" data-screen="final">
+      <div class="cabinet"><div class="bulbs"></div>
+        <div class="card">
+          <div class="win-burst">
+            <svg viewBox="0 0 220 220" aria-hidden="true">
+              <g stroke="url(#burstGrad)" stroke-width="3" stroke-linecap="round" opacity="0.7">
+                <line x1="110" y1="0" x2="110" y2="34"/>
+                <line x1="110" y1="220" x2="110" y2="186"/>
+                <line x1="0" y1="110" x2="34" y2="110"/>
+                <line x1="220" y1="110" x2="186" y2="110"/>
+                <line x1="26" y1="26" x2="50" y2="50"/>
+                <line x1="194" y1="26" x2="170" y2="50"/>
+                <line x1="26" y1="194" x2="50" y2="170"/>
+                <line x1="194" y1="194" x2="170" y2="170"/>
+              </g>
+            </svg>
+          </div>
+          <div class="thanks-icon">
+            <svg viewBox="0 0 36 36" aria-hidden="true"><path d="M7 19 l7 7 L29 11" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h1 class="q-big" id="finalHeading" style="margin-bottom:6px;">Thank you for being our long-term partner — we&rsquo;re always ready to create something new and amazing together!</h1>
+          <div class="ticket" style="margin-top:22px;">
+            <div class="ticket-head"><span>PicShot Studio</span><span>Feedback Ticket</span></div>
+            <div class="recap-list" id="recapList"></div>
+          </div>
+          <div class="final-actions">
+            <button class="btn btn-primary" id="sendBtn" onclick="sendToUs()">✉ Send Feedback</button>
+            <button class="skip-link" onclick="restartSurvey()">Start over</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Success modal -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal-card">
+      <div class="modal-icon">
+        <svg viewBox="0 0 36 36" aria-hidden="true"><path d="M7 19 l7 7 L29 11" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2>Thank you!</h2>
+      <p>We really appreciate you taking the time to share your feedback — it genuinely helps us get better.</p>
+      <button class="btn btn-primary" onclick="document.getElementById('successModal').classList.remove('show')">You&rsquo;re welcome!</button>
+    </div>
+  </div>
+
+<script>
+  const screens = [...document.querySelectorAll('.screen')];
+  const TOTAL = screens.length;
+  let current = 0;
+  let isTransitioning = false;
+
+  // Each reel is built from plain emoji filler only — the PIC / SHOT /
+  // STUDIO badge is spliced in ONCE per reel, exactly at the spot it needs
+  // to land. That way the brand word never repeats anywhere else on the
+  // strip (no chance of it echoing in the row above/below or on another
+  // reel at the same time) — it appears exactly once, together, on the
+  // winning middle row.
+  const EMOJI_SYMBOLS = [
+    { content:'🍒' },
+    { content:'⭐' },
+    { content:'💎' },
+    { content:'🔔' },
+    { content:'🍋' }
+  ];
+  const WORDS = [
+    { content:'PIC',    id:'pic' },
+    { content:'SHOT',   id:'shot' },
+    { content:'STUDIO', id:'studio' }
+  ];
+  // Reel 0 always lands on PIC, reel 1 on SHOT, reel 2 on STUDIO — read
+  // left-to-right across the payline it always spells out the studio name.
+  const WIN_ORDER = ['pic', 'shot', 'studio'];
+  const SPIN_VISIBLE = 3;                      // symbols stacked per reel at rest — the middle one is the payline result
+  const SPIN_ROWS = 12;                        // repeated passes of the emoji list per reel — comfortably covers REEL_LAPS + the visible window
+  const REEL_LAPS = [6, 7, 8];                 // full emoji-list passes per reel before the word is reached — left reel travels least, stops first
+  const REEL_DURATIONS = [900, 1150, 1450];    // ms — slower than a generic spin so PIC / SHOT / STUDIO are actually readable as they pass, staggered so reels stop left→right like a real machine
+  const REEL_EASING = 'cubic-bezier(.15,.7,.3,1)'; // fast start, long smooth glide into the stop — no hard cut
+  const WIN_HOLD = 520;                        // ms the finished "PIC SHOT STUDIO" row stays fully visible before lifting away
+
+  /* A small decorative badge graphic (gradient plate, border, ornamental
+     corner flourishes) used for the PIC / SHOT / STUDIO reel symbols —
+     a proper little logo tile rather than plain styled text. */
+  function wordBadgeSVG(text){
+    return '<svg viewBox="0 0 160 60" class="badge-svg" aria-hidden="true">' +
+      '<rect x="2.5" y="2.5" width="155" height="55" rx="13" fill="url(#badgeGrad)" stroke="#B5720C" stroke-width="2"/>' +
+      '<rect x="6" y="6" width="148" height="48" rx="10" fill="none" stroke="#fff" stroke-width="1" opacity=".45"/>' +
+      '<path d="M9 11 Q20 4 33 11" stroke="#fff" stroke-width="1.6" fill="none" opacity=".65"/>' +
+      '<path d="M127 49 Q140 56 151 49" stroke="#fff" stroke-width="1.6" fill="none" opacity=".65"/>' +
+      '<circle cx="10" cy="49" r="2.2" fill="#fff" opacity=".7"/>' +
+      '<circle cx="150" cy="11" r="2.2" fill="#fff" opacity=".7"/>' +
+      '<text x="80" y="39" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="800" font-size="23" letter-spacing="1.5" fill="#ffffff" stroke="#B5720C" stroke-width="0.9" paint-order="stroke" style="paint-order:stroke fill;">' + text + '</text>' +
+    '</svg>';
+  }
+
+  /* Builds three slot reels that fill the whole nameplate window and
+     actually spin through symbols — several real rotations, easing
+     smoothly into a stop rather than snapping — used to cover the card
+     window during every screen change (see showScreen). Motion is driven
+     by the Web Animations API; showScreen computes each reel's travel
+     distance from the real rendered column height so the three reels
+     always come to rest on PIC / SHOT / STUDIO across the payline row. */
+  function buildSpinFx(){
+    const spin = document.createElement('div');
+    spin.className = 'spin-fx';
+    const reels = [];
+    const E = EMOJI_SYMBOLS.length;
+    const total = SPIN_ROWS * E;
+    for(let c = 0; c < 3; c++){
+      const col = document.createElement('div');
+      col.className = 'spin-col';
+      const inner = document.createElement('div');
+      inner.className = 'spin-col-inner';
+      const word = WORDS.find(w => w.id === WIN_ORDER[c]);
+      // the single slot in this reel's strip where the word badge sits —
+      // every other slot on every reel is plain emoji, so PIC/SHOT/STUDIO
+      // can only ever appear once each, together, on the landed row.
+      const targetIndex = REEL_LAPS[c] * E + 1;
+      for(let i = 0; i < total; i++){
+        const s = document.createElement('div');
+        if(i === targetIndex){
+          s.className = 'sym word';
+          s.innerHTML = wordBadgeSVG(word.content);
+        } else {
+          s.className = 'sym emoji';
+          s.textContent = EMOJI_SYMBOLS[i % E].content;
+        }
+        inner.appendChild(s);
+      }
+      col.appendChild(inner);
+      spin.appendChild(col);
+      reels.push({ col, inner, targetIndex });
+    }
+    return { spin, reels };
+  }
+
+  /* ---------- Drop a ring of twinkling marquee bulbs into every cabinet
+     on the page ---------- */
+  const leverTpl = document.getElementById('leverTpl');
+  document.querySelectorAll('.cabinet').forEach(cab=>{
+    cab.appendChild(leverTpl.content.cloneNode(true));
+  });
+
+  /* Wrap every card's question content in a masked "reel window" so the
+     screen transition can genuinely scroll content through, like a real
+     slot reel. */
+  document.querySelectorAll('.card').forEach(card=>{
+    const inner = document.createElement('div');
+    inner.className = 'card-inner';
+    [...card.childNodes].forEach(node=>{
+      inner.appendChild(node);
+    });
+    card.appendChild(inner);
+  });
+
+  document.querySelectorAll('.bulbs').forEach(layer=>{
+    const N = 20;
+    for(let i=0;i<N;i++){
+      const b = document.createElement('span');
+      b.className = 'bulb';
+      const t = i / N;
+      let x, y;
+      if(t < 0.25){ x = t/0.25*100; y = 0; }
+      else if(t < 0.5){ x = 100; y = (t-0.25)/0.25*100; }
+      else if(t < 0.75){ x = 100-(t-0.5)/0.25*100; y = 100; }
+      else { x = 0; y = 100-(t-0.75)/0.25*100; }
+      b.style.left = 'calc(' + x + '% - 3px)';
+      b.style.top = 'calc(' + y + '% - 3px)';
+      b.style.animationDelay = (i * 0.08) + 's';
+      layer.appendChild(b);
+    }
+  });
+
+  const QUESTIONS = screens
+    .filter(s => s.dataset.screen === 'scale' || s.dataset.screen === 'text' || s.dataset.screen === 'choice')
+    .map(s => ({
+      key: s.dataset.key,
+      cat: s.dataset.cat,
+      label: s.querySelector('.q-big').textContent.trim(),
+      type: s.dataset.screen
+    }));
+  const state = {};
+  QUESTIONS.forEach(q => state[q.key] = q.type === 'scale' ? null : '');
+  // Optional free-text explanations the client can add after picking a low
+  // (1-3) score on any rating question — kept separately in memory so the
+  // recap ticket stays clean, but merged back into that same question's
+  // own value (e.g. "2 — Colors were a bit off") when the submission is
+  // sent, so it lands in the SAME spreadsheet cell as the score.
+  state.lowRatingNotes = {};
+
+  // Semi-joking multiple-choice options for the "next project" closer.
+  const CHOICE_OPTIONS = {
+    benefits: [
+      'A dedicated team that already knows our style and pipeline',
+      'Guaranteed team availability and priority scheduling',
+      'Faster project starts — no re-onboarding needed',
+      'Predictable budget and better rates',
+      'Easier long-term planning',
+      'Consistent quality across projects',
+      'Less time spent on briefs, explanations and approvals'
+    ]
+  };
+
+  screens.filter(s => s.dataset.screen === 'scale').forEach(s=>{
+    const key = s.dataset.key;
+    const wrap = s.querySelector('.scale-big');
+    for(let i=1;i<=5;i++){
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'scale-circle';
+      b.textContent = i;
+      b.setAttribute('aria-label', 'Score ' + i + ' out of 5');
+      b.addEventListener('click', ()=> selectScale(s, key, i, b));
+      wrap.appendChild(b);
+    }
+    const endEl = s.querySelector('.scale-endlabels');
+    endEl.innerHTML = '<span>' + s.dataset.low + '</span><span>' + s.dataset.high + '</span>';
+
+    // Low-rating follow-up: optional explanation field, shown only once the
+    // client picks a 1-3 score on this particular question.
+    const note = document.createElement('div');
+    note.className = 'low-rating-note';
+    note.innerHTML =
+      '<label class="lrn-label">We&rsquo;re sorry to hear that — what happened? Help us get better</label>' +
+      '<textarea class="q-textarea lrn-textarea" placeholder="Tell us more…"></textarea>' +
+      '<div class="screen-actions"><button type="button" class="btn btn-primary lrn-continue">Continue →</button></div>';
+    endEl.insertAdjacentElement('afterend', note);
+    const lrnTextarea = note.querySelector('.lrn-textarea');
+    lrnTextarea.addEventListener('input', ()=>{ state.lowRatingNotes[key] = lrnTextarea.value.trim(); });
+    note.querySelector('.lrn-continue').addEventListener('click', ()=>{
+      if(screens[current] === s) nextScreen();
+    });
+  });
+
+  screens.filter(s => s.dataset.screen === 'choice').forEach(s=>{
+    const key = s.dataset.key;
+    const wrap = s.querySelector('.choice-list');
+    (CHOICE_OPTIONS[key] || []).forEach(optText=>{
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'choice-btn';
+      b.textContent = optText;
+      b.addEventListener('click', ()=> selectChoice(s, key, optText, b));
+      wrap.appendChild(b);
+    });
+  });
+
+  /* "Art only" opt-out: lets a client whose project never included
+     animation skip that rating instead of being forced to score something
+     that doesn't apply, while still leaving a clear note on the ticket. */
+  document.querySelectorAll('.na-checkbox').forEach(cb=>{
+    const screenEl = cb.closest('.screen');
+    const key = screenEl.dataset.key;
+    const scaleWrap = screenEl.querySelector('.scale-big');
+    const note = screenEl.querySelector('.low-rating-note');
+    const continueWrap = screenEl.querySelector('.na-continue-wrap');
+    cb.addEventListener('change', ()=>{
+      if(cb.checked){
+        state[key] = 'N/A — art only project (no animation)';
+        scaleWrap.querySelectorAll('.scale-circle').forEach(c=>{ c.classList.remove('selected'); c.disabled = true; });
+        scaleWrap.classList.add('disabled-scale');
+        if(note) note.classList.remove('show');
+        if(continueWrap) continueWrap.style.display = 'flex';
+      } else {
+        state[key] = null;
+        scaleWrap.querySelectorAll('.scale-circle').forEach(c=>{ c.disabled = false; });
+        scaleWrap.classList.remove('disabled-scale');
+        if(continueWrap) continueWrap.style.display = 'none';
+      }
+    });
+    if(continueWrap){
+      continueWrap.querySelector('.na-continue-btn').addEventListener('click', ()=>{
+        if(screens[current] === screenEl) nextScreen();
+      });
+    }
+  });
+
+  /* Little coin-sparkle burst from the clicked rating — the "interesting
+     effect" tying the survey back to the studio's own 2D animation craft */
+  function spawnBurst(originEl){
+    const rect = originEl.getBoundingClientRect();
+    const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+    const colors = ['#FDB813','#F7931E','#EF7F1A','#FFE9A8'];
+    for(let i=0;i<9;i++){
+      const p = document.createElement('span');
+      p.className = 'spark-particle';
+      p.style.left = cx + 'px';
+      p.style.top = cy + 'px';
+      p.style.background = colors[i % colors.length];
+      document.body.appendChild(p);
+      const angle = (Math.PI * 2 * i) / 9 + Math.random()*0.4;
+      const dist = 46 + Math.random()*26;
+      const dx = Math.cos(angle) * dist, dy = Math.sin(angle) * dist;
+      const anim = p.animate([
+        { transform:'translate(0,0) scale(1)', opacity:1 },
+        { transform:'translate(' + dx + 'px,' + dy + 'px) scale(0.2)', opacity:0 }
+      ], { duration:560 + Math.random()*200, easing:'cubic-bezier(.2,.7,.3,1)' });
+      anim.onfinish = () => p.remove();
+    }
+  }
+  function selectScale(screenEl, key, value, btnEl){
+    const naCb = screenEl.querySelector('.na-checkbox');
+    if(naCb && naCb.checked) return; // "art only" is active — ratings on this question are ignored
+    state[key] = value;
+    [...screenEl.querySelectorAll('.scale-circle')].forEach(c=>{
+      c.classList.toggle('selected', Number(c.textContent) === value);
+    });
+    spawnBurst(btnEl);
+    if(value >= 5){
+      const cab = screenEl.querySelector('.cabinet');
+      if(cab){
+        cab.classList.remove('jackpot'); void cab.offsetWidth; cab.classList.add('jackpot');
+        setTimeout(()=> cab.classList.remove('jackpot'), 650);
+      }
+    }
+    const note = screenEl.querySelector('.low-rating-note');
+    if(value <= 3){
+      // Low score — pause here and offer an optional "why" field instead
+      // of auto-advancing straight past it.
+      if(note){
+        note.classList.add('show');
+        const ta = note.querySelector('.lrn-textarea');
+        setTimeout(()=>{ if(ta) ta.focus(); }, 320);
+      }
+    } else {
+      if(note) note.classList.remove('show');
+      setTimeout(()=>{ if(screens[current] === screenEl) nextScreen(); }, 420);
+    }
+  }
+
+  /* multi-select choice screens (data-multi): toggle options, no auto-advance */
+  function collectMulti(screenEl){
+    const picks = [...screenEl.querySelectorAll('.choice-btn.selected')].map(b => b.textContent);
+    const other = screenEl.querySelector('.choice-other');
+    if(other && other.value.trim()) picks.push(other.value.trim());
+    state[screenEl.dataset.key] = picks.join('; ');
+  }
+  document.querySelectorAll('.choice-other').forEach(inp => inp.addEventListener('input', () => collectMulti(inp.closest('.screen'))));
+  function selectChoice(screenEl, key, value, btnEl){
+    if(screenEl.dataset.multi){
+      btnEl.classList.toggle('selected');
+      if(btnEl.classList.contains('selected')) spawnBurst(btnEl);
+      collectMulti(screenEl);
+      return;
+    }
+    state[key] = value;
+    [...screenEl.querySelectorAll('.choice-btn')].forEach(c=>{
+      c.classList.toggle('selected', c === btnEl);
+    });
+    spawnBurst(btnEl);
+    setTimeout(()=>{ if(screens[current] === screenEl) nextScreen(); }, 420);
+  }
+
+  function updateChrome(){
+    const pct = TOTAL <= 1 ? 0 : Math.round((current / (TOTAL - 1)) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    const step = document.getElementById('stepCounter');
+    const kind = screens[current].dataset.screen;
+    step.textContent = (kind === 'cover' || kind === 'final') ? '' : (current + ' / ' + (TOTAL - 2));
+    document.getElementById('backArrow').classList.toggle('show', current > 0 && kind !== 'final');
+  }
+
+  /* ---------- Dispatcher: the reel spin is a one-time "start the machine"
+     flourish for the very first transition (cover → question 1) only.
+     Every later question-to-question change uses the quieter gate/press
+     transition instead, so the full slot-reel spectacle doesn't repeat on
+     every single question. ---------- */
+  function showScreen(index){
+    if(isTransitioning) return;
+    isTransitioning = true;
+    if(screens[current].dataset.screen === 'cover'){
+      runReelTransition(index);
+    } else {
+      runGateTransition(index);
+    }
+  }
+
+  /* ---------- Real slot-reel transition: three reels fill the whole
+     nameplate and spin through several rotations of symbols, each one
+     easing smoothly into its own stop — left reel first, then middle,
+     then right, like a real machine settling rather than snapping to a
+     halt. All three are steered to land on the SAME symbol in the middle
+     payline row, so it always reads as a win — the row glows and sparks
+     for a beat — before the cover lifts away to reveal the next question
+     already in place underneath. Bulbs flash and the cabinet's own handle
+     pulls in sync, all inside the same fixed cabinet frame — nothing
+     floats over the page. Used only once, for "Spin to Begin". ---------- */
+  function runReelTransition(index){
+    const outLever = screens[current].querySelector('.cab-lever');
+    const outInner = screens[current].querySelector('.card-inner');
+    const { spin, reels } = buildSpinFx();
+    if(outInner) outInner.appendChild(spin);
+    requestAnimationFrame(()=> spin.classList.add('show'));
+
+    // Swap the underlying question in immediately — the opaque reel window
+    // covers it completely either way, so this is invisible to the user.
+    // Doing it up front (rather than partway through the spin) means every
+    // measurement below is taken from the card the reel will actually be
+    // sitting in once it comes to rest, so PIC / SHOT / STUDIO reliably
+    // lands on the true middle payline instead of drifting off it if that
+    // card happens to be a different height than the cover.
+    screens[current].classList.remove('active');
+    current = index;
+    screens[current].classList.add('active');
+    const inInner = screens[current].querySelector('.card-inner');
+    if(inInner && spin.parentNode !== inInner) inInner.appendChild(spin);
+    const inBulbs = screens[current].querySelector('.bulbs');
+    if(inBulbs) inBulbs.classList.add('flash');
+    updateChrome();
+    if(screens[current].dataset.screen === 'final'){ renderRecap(); launchConfetti(); }
+    const focusEl = screens[current].querySelector('.q-textarea:not(.lrn-textarea), .q-input');
+    if(focusEl) setTimeout(()=>focusEl.focus(), 300);
+
+    const readyAndFinished = new Promise(resolve=>{
+      requestAnimationFrame(()=>{
+        const colHeight = reels[0].col.getBoundingClientRect().height || (SPIN_VISIBLE * 90);
+        const itemHeight = colHeight / SPIN_VISIBLE;
+        reels.forEach(reel=>{
+          [...reel.inner.children].forEach(el=>{ el.style.height = itemHeight + 'px'; });
+        });
+        const finished = reels.map((reel, i)=>{
+          // each reel is steered to its own designated word (PIC / SHOT /
+          // STUDIO) — the one spot in its strip where that word lives —
+          // landing in the MIDDLE of the three visible slots (hence the -1)
+          // — read across the row it always spells the studio name out
+          const finalY = (reel.targetIndex - 1) * itemHeight;
+          reel.col.classList.add('spinning');
+          const anim = reel.inner.animate(
+            [{ transform:'translateY(0)' }, { transform:'translateY(-' + finalY + 'px)' }],
+            { duration: REEL_DURATIONS[i], easing: REEL_EASING, fill:'forwards' }
+          );
+          return anim.finished
+            .then(()=> reel.col.classList.add('stopped'))
+            .catch(()=>{}); // a cancelled/replaced animation rejects — harmless here
+        });
+        resolve(Promise.all(finished));
+      });
+    });
+
+    if(outLever){
+      outLever.classList.remove('pulled'); void outLever.offsetWidth; outLever.classList.add('pulled');
+      setTimeout(()=> outLever.classList.remove('pulled'), 300);
+    }
+
+    readyAndFinished.then(()=>{
+      spin.classList.add('win');
+      fireWinSparkles(spin);
+      setTimeout(()=>{
+        if(inBulbs) inBulbs.classList.remove('flash');
+        spin.classList.remove('show');
+        spin.classList.add('landing');
+        const inInner2 = screens[current].querySelector('.card-inner');
+        if(inInner2){
+          inInner2.classList.remove('landed'); void inInner2.offsetWidth; inInner2.classList.add('landed');
+          setTimeout(()=> inInner2.classList.remove('landed'), 320);
+        }
+        setTimeout(()=>{ spin.remove(); isTransitioning = false; }, 260);
+      }, WIN_HOLD); // hold so "PIC SHOT STUDIO" is actually readable before it lifts away
+    });
+  }
+
+  /* A small spark burst at the payline of each reel once all three have
+     landed on the same symbol — reuses the same particle technique as a
+     rating pick (spawnBurst), just fed a synthetic "element" at each
+     reel's center instead of a real button. */
+  function fireWinSparkles(spin){
+    [...spin.querySelectorAll('.spin-col')].forEach(col=>{
+      const rect = col.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+      spawnBurst({ getBoundingClientRect: () => ({ left: cx, top: cy, width: 0, height: 0 }) });
+    });
+  }
+
+  function buildGateFx(){
+    const gate = document.createElement('div');
+    gate.className = 'gate-fx';
+    const top = document.createElement('div'); top.className = 'gate-panel gate-top';
+    const bot = document.createElement('div'); bot.className = 'gate-panel gate-bottom';
+    gate.appendChild(top); gate.appendChild(bot);
+    return { gate, top, bot };
+  }
+
+  /* ---------- Gate transition: closes like a press/vault door over the
+     nameplate, swaps the next question in underneath while fully hidden,
+     then retracts to reveal it. This is the everyday transition between
+     questions — the reel spin is reserved for the opening screen only. --*/
+  function runGateTransition(index){
+    const outInner = screens[current].querySelector('.card-inner');
+    const { gate, top, bot } = buildGateFx();
+    if(outInner) outInner.appendChild(gate);
+
+    const closeTop = top.animate([{ transform:'translateY(-100%)' }, { transform:'translateY(0)' }], { duration:260, easing:'cubic-bezier(.5,0,.2,1)', fill:'forwards' });
+    const closeBot = bot.animate([{ transform:'translateY(100%)' }, { transform:'translateY(0)' }], { duration:260, easing:'cubic-bezier(.5,0,.2,1)', fill:'forwards' });
+
+    Promise.all([closeTop.finished, closeBot.finished]).catch(()=>{}).then(()=>{
+      gate.classList.add('sealed');
+
+      screens[current].classList.remove('active');
+      current = index;
+      screens[current].classList.add('active');
+      const inInner = screens[current].querySelector('.card-inner');
+      if(inInner && gate.parentNode !== inInner) inInner.appendChild(gate);
+      const inBulbs = screens[current].querySelector('.bulbs');
+      if(inBulbs){ inBulbs.classList.add('flash'); setTimeout(()=> inBulbs.classList.remove('flash'), 380); }
+      updateChrome();
+
+      const goingToFinal = screens[current].dataset.screen === 'final';
+      if(goingToFinal) renderRecap();
+
+      const openGate = ()=>{
+        gate.classList.remove('sealed');
+        if(goingToFinal) gate.classList.add('win-open');
+        const openDur = goingToFinal ? 360 : 280;
+        const openTop = top.animate([{ transform:'translateY(0)' }, { transform:'translateY(-100%)' }], { duration:openDur, easing:'cubic-bezier(.4,0,.15,1)', fill:'forwards' });
+        const openBot = bot.animate([{ transform:'translateY(0)' }, { transform:'translateY(100%)' }], { duration:openDur, easing:'cubic-bezier(.4,0,.15,1)', fill:'forwards' });
+        Promise.all([openTop.finished, openBot.finished]).catch(()=>{}).then(()=>{
+          gate.remove();
+          if(inInner){
+            inInner.classList.remove('landed'); void inInner.offsetWidth; inInner.classList.add('landed');
+            setTimeout(()=> inInner.classList.remove('landed'), 320);
+          }
+          if(goingToFinal) launchConfetti();
+          isTransitioning = false;
+          const focusEl = screens[current].querySelector('.q-textarea:not(.lrn-textarea), .q-input');
+          if(focusEl) setTimeout(()=>focusEl.focus(), 200);
+        });
+      };
+
+      if(goingToFinal && inInner){
+        // Stay sealed behind the closed gate for the "thank you" popup —
+        // only once it has flown in, held, and cleared does the gate open
+        // again, like a win reveal, to show the ticket underneath.
+        setTimeout(()=> showJackpotPopup(inInner).then(openGate), 140);
+      } else {
+        setTimeout(openGate, 90);
+      }
+    });
+  }
+
+  /* Decorative celebratory badge shown once, for the final "you're done"
+     moment — same gradient-plate look as the reel word badges, just
+     bigger, with a soft ray burst behind it. Says thank you rather than
+     literal "jackpot" wording, so it still reads as a feedback form. */
+  function jackpotSVG(){
+    const rays = Array.from({ length: 10 }, (_, i)=>{
+      const a = (i / 10) * Math.PI * 2;
+      const x1 = 160 + Math.cos(a) * 78, y1 = 100 + Math.sin(a) * 78;
+      const x2 = 160 + Math.cos(a) * 118, y2 = 100 + Math.sin(a) * 118;
+      return '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '" stroke="url(#badgeGrad)" stroke-width="4" stroke-linecap="round" opacity=".55"/>';
+    }).join('');
+    return '<svg viewBox="0 0 320 200" class="jackpot-svg" aria-hidden="true">' +
+      '<g>' + rays + '</g>' +
+      '<rect x="26" y="66" width="268" height="46" rx="14" fill="url(#badgeGrad)" stroke="#B5720C" stroke-width="2.5"/>' +
+      '<rect x="31" y="71" width="258" height="36" rx="10" fill="none" stroke="#fff" stroke-width="1" opacity=".45"/>' +
+      '<text x="160" y="96" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="800" font-size="21" letter-spacing="1.2" fill="#ffffff" stroke="#B5720C" stroke-width="0.9" style="paint-order:stroke fill;">THANK YOU!</text>' +
+      '<text x="160" y="140" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="15" fill="#B5720C">From the PicShot Studio team</text>' +
+    '</svg>';
+  }
+
+  /* Shows the thank-you badge and resolves once it has flown in, held,
+     and flown back out again — the caller uses this to time the gate's
+     "win" reveal so it only opens once the popup has cleared. */
+  function showJackpotPopup(container){
+    return new Promise(resolve=>{
+      const pop = document.createElement('div');
+      pop.className = 'jackpot-pop';
+      pop.innerHTML = jackpotSVG();
+      container.appendChild(pop);
+      const finish = ()=>{ pop.remove(); resolve(); };
+      const inAnim = pop.animate([
+        { transform:'scale(.25) rotate(-6deg)', opacity:0 },
+        { transform:'scale(1.12) rotate(2deg)', opacity:1, offset:.65 },
+        { transform:'scale(1) rotate(0deg)', opacity:1 }
+      ], { duration:480, easing:'cubic-bezier(.2,1.5,.4,1)', fill:'forwards' });
+      inAnim.finished.then(()=>{
+        setTimeout(()=>{
+          const outAnim = pop.animate([
+            { transform:'scale(1) translateY(0)', opacity:1 },
+            { transform:'scale(1.25) translateY(-30px)', opacity:0 }
+          ], { duration:340, easing:'cubic-bezier(.4,0,1,1)', fill:'forwards' });
+          outAnim.finished.then(finish).catch(finish);
+        }, 700);
+      }).catch(finish);
+    });
+  }
+
+  /* The company/project field on the "who should we thank" screen is
+     required — shake + highlight it instead of advancing if it's empty. */
+  function submitName(){
+    const input = document.getElementById('clientName');
+    const val = (input.value || '').trim();
+    if(!val){
+      input.classList.remove('input-error'); void input.offsetWidth; input.classList.add('input-error');
+      input.focus();
+      return;
+    }
+    nextScreen();
+  }
+
+  function nextScreen(){ if(current < TOTAL - 1) showScreen(current + 1); }
+  function prevScreen(){ if(current > 0) showScreen(current - 1); }
+
+  // NOTE: excludes .lrn-textarea (the low-rating explanation field) on
+  // purpose — it lives inside a 'scale' screen sharing that screen's
+  // dataset.key, so without this exclusion its input would overwrite the
+  // numeric rating in state instead of the rating value. It has its own
+  // dedicated listener (see the low-rating-note setup above) that writes
+  // into state.lowRatingNotes instead.
+  document.querySelectorAll('.q-textarea:not(.lrn-textarea), .q-input:not(.choice-other)').forEach(el=>{
+    el.addEventListener('input', ()=>{
+      const screenEl = el.closest('.screen');
+      if(screenEl.dataset.key) state[screenEl.dataset.key] = el.value.trim();
+    });
+  });
+
+  document.addEventListener('keydown', (e)=>{
+    const kind = screens[current].dataset.screen;
+    if(kind === 'scale'){
+      const wrap = screens[current].querySelector('.scale-big');
+      if(e.key >= '1' && e.key <= '5'){
+        selectScale(screens[current], screens[current].dataset.key, Number(e.key), wrap.children[Number(e.key)-1]);
+      }
+    }
+    if(e.key === 'Enter'){
+      if(document.activeElement.tagName !== 'TEXTAREA'){ e.preventDefault(); nextScreen(); }
+    }
+    if(e.key === 'Escape'){ prevScreen(); }
+  });
+
+  function escapeHtml(str){
+    return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+  function renderRecap(){
+    const list = document.getElementById('recapList');
+    list.innerHTML = '';
+    QUESTIONS.forEach(q=>{
+      const row = document.createElement('div');
+      row.className = 'recap-row';
+      const val = state[q.key];
+      let shown;
+      if(q.type === 'scale'){
+        if(val === null || val === undefined){
+          shown = '<span class="ra muted">Skipped</span>';
+        } else if(typeof val === 'string'){
+          // e.g. the "art only" N/A note on the animation question
+          shown = '<span class="ra muted">' + escapeHtml(val) + '</span>';
+        } else {
+          shown = '<span class="ra">' + val + '/5</span>';
+        }
+      } else {
+        const emptyLabel = q.type === 'choice' ? 'Skipped' : 'No comment';
+        shown = val ? '<span class="ra">' + escapeHtml(val) + '</span>' : '<span class="ra muted">' + emptyLabel + '</span>';
+      }
+      row.innerHTML = '<span class="rq">' + escapeHtml(q.label) + '</span>' + shown;
+      list.appendChild(row);
+    });
+    // Heading stays generic on purpose — the company/project name is only
+    // used internally (ticket + email), never echoed back on screen.
+    document.getElementById('finalHeading').textContent = 'Thank you for being our long-term partner — we’re always ready to create something new and amazing together!';
+  }
+
+  /* Confetti shower on arrival at the final "you win" screen */
+  function launchConfetti(){
+    const colors = ['#FDB813','#F7931E','#EF7F1A','#141414','#FFE9A8'];
+    const N = 46;
+    for(let i=0;i<N;i++){
+      const c = document.createElement('span');
+      c.className = 'confetti-piece';
+      const size = 6 + Math.random()*6;
+      c.style.width = size + 'px';
+      c.style.height = (size*0.4) + 'px';
+      c.style.background = colors[i % colors.length];
+      c.style.left = (Math.random()*100) + 'vw';
+      document.body.appendChild(c);
+      const duration = 2200 + Math.random()*1400;
+      const drift = (Math.random()-0.5) * 160;
+      const rot = 360 + Math.random()*360;
+      const anim = c.animate([
+        { transform:'translate(0,0) rotate(0deg)', opacity:1 },
+        { transform:'translate(' + drift + 'px, 100vh) rotate(' + rot + 'deg)', opacity:0.9 }
+      ], { duration, easing:'cubic-bezier(.25,.4,.4,1)', delay: Math.random()*300 });
+      anim.onfinish = () => c.remove();
+    }
+  }
+
+  function restartSurvey(){
+    QUESTIONS.forEach(q => state[q.key] = q.type === 'scale' ? null : '');
+    state.lowRatingNotes = {};
+    document.querySelectorAll('.scale-circle').forEach(b => { b.classList.remove('selected'); b.disabled = false; });
+    document.querySelectorAll('.scale-big').forEach(w => w.classList.remove('disabled-scale'));
+    document.querySelectorAll('.choice-btn.selected').forEach(b => b.classList.remove('selected'));
+    document.querySelectorAll('.low-rating-note').forEach(n => n.classList.remove('show'));
+    document.querySelectorAll('.na-continue-wrap').forEach(w => w.style.display = 'none');
+    document.querySelectorAll('.na-checkbox').forEach(cb => { cb.checked = false; });
+    document.querySelectorAll('.q-textarea').forEach(t => t.value = '');
+    document.querySelectorAll('.choice-other').forEach(t => t.value = '');
+    document.getElementById('clientName').value = '';
+    showScreen(0);
+  }
+
+  /* ---------- One-click send ---------- */
+  const COMPANY_EMAIL = 'picshot.lab@gmail.com';
+  /* Paste the Web App URL of long-term-feedback-apps-script.gs between the quotes.
+     While it is empty, "Send Feedback" opens Gmail with the answers. */
+  const SHEETS_ENDPOINT = '';
+  // Combine a low score with its optional explanation into one bit of text
+  // — e.g. " — Colors were a bit off from the brief" — so the explanation
+  // rides along in the SAME cell/line as the rating itself instead of a
+  // separate column.
+  function lowRatingSuffix(key){
+    const note = state.lowRatingNotes[key];
+    return note ? ' — ' + note : '';
+  }
+  function buildEmailBody(){
+    const clientName = (document.getElementById('clientName').value || '').trim();
+    const lines = [];
+    lines.push('PicShot Studio — Long-Term Contract Feedback');
+    if(clientName) lines.push('From: ' + clientName);
+    lines.push('Date: ' + new Date().toLocaleDateString('en-GB'));
+    lines.push('');
+    let currentCat = '';
+    QUESTIONS.forEach(q=>{
+      if(q.cat !== currentCat){ currentCat = q.cat; lines.push(currentCat + ':'); }
+      const val = state[q.key];
+      let shown;
+      if(q.type === 'scale'){
+        if(val === null || val === undefined) shown = 'Skipped';
+        else if(typeof val === 'string') shown = val;
+        else shown = val + '/5' + lowRatingSuffix(q.key);
+      } else {
+        shown = val || '—';
+      }
+      lines.push('  ' + q.label + ': ' + shown);
+    });
+    return lines.join('\n');
+  }
+  async function sendToUs(){
+    const btn = document.getElementById('sendBtn');
+    if(SHEETS_ENDPOINT){
+      const clientName = (document.getElementById('clientName').value || '').trim();
+      btn.disabled = true;
+      const original = btn.textContent;
+      btn.textContent = 'Sending…';
+      try{
+        const payload = { company: clientName };
+        QUESTIONS.forEach(q => {
+          const val = state[q.key];
+          if(val === null || val === undefined){
+            payload[q.key] = '';
+          } else if(q.type === 'scale' && typeof val === 'number'){
+            // e.g. "2 — Colors were a bit off from the brief" — the
+            // explanation lands in the same cell as the score.
+            payload[q.key] = val + lowRatingSuffix(q.key);
+          } else {
+            payload[q.key] = val;
+          }
+        });
+        await fetch(SHEETS_ENDPOINT, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams(payload) });
+        btn.textContent = '✓ Sent — thank you!';
+        document.getElementById('successModal').classList.add('show');
+      }catch(err){
+        btn.textContent = original;
+        btn.disabled = false;
+        alert('Could not send right now. Please check your internet connection and try again.');
+      }
+      return;
+    }
+    const subject = 'Long-Term Contract Feedback' + ((document.getElementById('clientName').value || '').trim() ? ' — ' + document.getElementById('clientName').value.trim() : '');
+    const body = buildEmailBody();
+    const gmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(COMPANY_EMAIL) + '&su=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    window.open(gmailUrl, '_blank');
+    document.getElementById('successModal').classList.add('show');
+  }
+
+  updateChrome();
+</script>
+</body>
+</html>
