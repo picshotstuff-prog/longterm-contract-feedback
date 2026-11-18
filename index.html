@@ -1869,7 +1869,6 @@
     document.querySelectorAll('.choice-btn').forEach(b => { b.textContent = choiceText(b.closest('.screen').dataset.key, b.dataset.v); });
     document.querySelectorAll('[data-lang-btn]').forEach(b => b.classList.toggle('active', b.dataset.langBtn === lang));
     document.querySelectorAll('.lang-card').forEach(c => c.classList.toggle('current', c.getAttribute('onclick') === "pickLang('" + lang + "')"));
-    try{ localStorage.setItem('picshot_lang', lang); }catch(e){}
     if(screens[current] && screens[current].dataset.screen === 'final') renderRecap();
   }
   function pickLang(lang){
@@ -1879,7 +1878,7 @@
   }
   (function initLang(){
     let saved = null;
-    try{ saved = new URLSearchParams(location.search).get('lang') || localStorage.getItem('picshot_lang'); }catch(e){}
+    try{ saved = new URLSearchParams(location.search).get('lang'); }catch(e){}
     setLang(saved || 'en');
     if(!saved) document.body.classList.add('picking');
   })();
