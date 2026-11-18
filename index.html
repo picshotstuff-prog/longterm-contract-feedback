@@ -513,6 +513,137 @@
     .recap-row{ flex-direction:column; gap:3px; }
     .recap-row .ra{ text-align:left; max-width:100%; }
   }
+  /* ---------- Language picker & switcher ---------- */
+  .lang-switch{display:inline-flex;gap:2px;padding:3px;border:1.5px solid var(--line);border-radius:999px;background:var(--paper);}
+  .lang-switch button{border:none;background:transparent;border-radius:999px;padding:6px 11px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:.8px;color:var(--muted);cursor:pointer;transition:background .15s,color .15s;}
+  .lang-switch button:hover{color:var(--orange-3);}
+  .lang-switch button.active{color:#fff;background:linear-gradient(120deg,var(--orange-1),var(--orange-3));box-shadow:0 4px 12px rgba(239,127,26,.3);}
+  .lang-hero{max-width:620px;text-align:center;}
+  .lang-badge{margin:0 auto 14px auto;display:flex;align-items:center;justify-content:center;animation:badgeIn .7s cubic-bezier(.2,.8,.3,1.2) both;}
+  .lang-badge img{height:150px;width:auto;max-width:100%;object-fit:contain;display:block;}
+  @keyframes badgeIn{from{opacity:0;transform:scale(.6) rotate(-8deg);}to{opacity:1;transform:none;}}
+  .lang-greet{margin:0 0 10px 0;font-family:'Sora',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:clamp(34px,5.4vw,56px);font-weight:800;letter-spacing:-1.2px;line-height:1.15;}
+  .greet-reel{display:inline-flex;flex-direction:column;height:1.15em;overflow:hidden;vertical-align:top;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 18%,#000 82%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 18%,#000 82%,transparent 100%);}
+  .greet-reel span{display:block;height:1.15em;white-space:nowrap;background:linear-gradient(120deg,var(--orange-1),var(--orange-2),var(--orange-3));-webkit-background-clip:text;background-clip:text;color:transparent;animation:reel 7.5s cubic-bezier(.7,0,.25,1) infinite;}
+  @keyframes reel{0%,26%{transform:translateY(0);}33%,59%{transform:translateY(-100%);}66%,92%{transform:translateY(-200%);}100%{transform:translateY(-300%);}}
+  .lang-sub{font-size:15px;color:var(--muted);margin:0 0 30px 0;font-weight:600;}
+  .lang-sub i{font-style:normal;color:var(--orange-2);margin:0 6px;}
+  .lang-list{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:8px;box-shadow:0 24px 60px rgba(20,20,20,.08),0 2px 6px rgba(20,20,20,.04);text-align:left;}
+  .lang-card{position:relative;width:100%;display:flex;align-items:center;gap:18px;padding:16px 18px;border:none;border-radius:16px;background:transparent;cursor:pointer;font-family:inherit;text-align:left;transition:background .25s ease,transform .25s ease;}
+  .lang-card + .lang-card{margin-top:2px;}
+  .lang-card + .lang-card::before{content:"";position:absolute;left:18px;right:18px;top:-2px;height:1px;background:var(--line);transition:opacity .2s;}
+  .lang-card:hover::before,.lang-card:hover + .lang-card::before,.lang-card:focus-visible::before,.lang-card:focus-visible + .lang-card::before{opacity:0;}
+  .lang-code{width:52px;height:52px;flex-shrink:0;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;letter-spacing:1px;color:var(--orange-3);background:#FFF3DE;transition:all .25s ease;}
+  .lang-text{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
+  .lang-name{font-family:'Sora',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:20px;font-weight:700;color:var(--black);transition:color .25s;}
+  .lang-cta{font-size:13px;color:var(--muted);font-weight:500;transition:color .25s;}
+  .lang-go{width:38px;height:38px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#cdbfa6;border:1.5px solid var(--line);transition:all .25s ease;}
+  .lang-go svg{width:18px;height:18px;}
+  .lang-card:hover,.lang-card:focus-visible{background:linear-gradient(120deg,var(--orange-1),var(--orange-3));outline:none;transform:scale(1.015);box-shadow:0 14px 30px rgba(239,127,26,.30);}
+  .lang-card:hover .lang-code,.lang-card:focus-visible .lang-code{background:rgba(255,255,255,.22);color:#fff;}
+  .lang-card:hover .lang-name,.lang-card:focus-visible .lang-name{color:#fff;}
+  .lang-card:hover .lang-cta,.lang-card:focus-visible .lang-cta{color:rgba(255,255,255,.85);}
+  .lang-card:hover .lang-go,.lang-card:focus-visible .lang-go{color:var(--orange-3);background:#fff;border-color:#fff;transform:translateX(3px);}
+  .lang-card.current .lang-go{color:var(--orange-3);border-color:#F3C77E;}
+  .lang-note{margin:22px 0 0 0;font-size:13px;color:var(--muted);}
+  @media (max-width:640px){
+    .lang-badge img{height:96px;}
+    .lang-sub{font-size:13px;margin-bottom:22px;}
+    .lang-sub i{margin:0 3px;}
+    .lang-card{gap:14px;padding:13px 12px;}
+    .lang-code{width:44px;height:44px;font-size:14px;}
+    .lang-name{font-size:17px;}
+    .lang-switch button{padding:5px 8px;font-size:11px;}
+  }
+  @media (prefers-reduced-motion:reduce){ .greet-reel span{animation:none;} .lang-badge{animation:none;} }
+
+
+  /* ---------- Header & footer — same as the setup form ---------- */
+  html,body{ height:100%; }
+  body{ display:flex; flex-direction:column; overflow:hidden; min-height:0; }
+  .topbar{ display:flex; align-items:center; justify-content:space-between; height:76px; padding:0 28px; border-bottom:1px solid var(--line); background:var(--paper); flex-shrink:0; position:relative; z-index:30; }
+  .badge-wrap{ display:inline-flex; align-items:center; flex-shrink:0; }
+  .badge-wrap img{ height:68px; width:auto; display:block; object-fit:contain; }
+  .top-right{ display:flex; align-items:center; gap:16px; }
+  .topbar .step-counter{ position:static; font-size:13px; }
+  .bottombar{ border-top:1px solid var(--line); background:var(--paper); height:76px; padding:0 28px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-shrink:0; position:relative; z-index:30; }
+  .dots{ display:flex; gap:8px; flex-wrap:wrap; }
+  .dot{ width:9px; height:9px; border-radius:50%; background:#e3dbcb; transition:background .15s ease, transform .15s ease; }
+  .dot.done{ background:#F3C77E; }
+  .dot.active{ background:linear-gradient(120deg,var(--orange-1),var(--orange-3)); transform:scale(1.25); }
+  .nav-btns{ display:flex; gap:10px; }
+  .bottombar .btn{ padding:11px 22px; font-size:14.5px; }
+  .btn-secondary{ background:var(--paper); color:var(--black); border:1.5px solid var(--line); box-shadow:none; }
+  .btn-secondary:hover{ border-color:#cfc6b5; }
+  .btn[disabled]{ opacity:.35; cursor:not-allowed; transform:none; }
+  /* the middle area scrolls between the bars, so nothing is ever covered */
+  .stage{ flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:36px 40px; }
+  .screen.active, .lang-screen{ margin:auto 0; }
+  .lang-screen{ display:none; width:100%; max-width:640px; position:relative; z-index:1; }
+  body.picking .lang-screen{ display:block; }
+  body.picking .stage .screen{ display:none !important; }
+  body.picking .nav-btns, body.picking .step-counter{ visibility:hidden; }
+  /* final screen: a wider machine + two-column ticket, so the whole cabinet
+     (frame included) fits between the header and the footer */
+  .screen[data-screen="final"]{ max-width:min(980px, 100%); }
+  [data-screen="final"] #finalHeading{ max-width:720px; margin-left:auto !important; margin-right:auto !important; }
+  @media (min-width:760px){
+    [data-screen="final"] .recap-list{ display:grid; grid-template-columns:1fr 1fr; column-gap:28px; }
+    [data-screen="final"] .recap-row{ border-bottom:1px dotted #DDCBA6 !important; align-items:flex-start; }
+    [data-screen="final"] .recap-row .rq{ font-size:12px; line-height:1.35; }
+  }
+  [data-screen="final"] .thanks-icon{ display:none; }
+  [data-screen="final"] .final-actions{ flex-direction:row; justify-content:center; align-items:center; gap:18px; }
+  /* safety net for very short screens: the list scrolls inside the ticket */
+  [data-screen="final"] .recap-list{ max-height:clamp(150px, calc(100dvh - 500px), 640px); overflow-y:auto; padding-right:6px; scrollbar-width:thin; scrollbar-color:#E4CFA3 transparent; }
+  [data-screen="final"] .win-burst{ display:none; }
+  @media (max-height:820px){
+    .lang-badge img{ height:96px; }
+    .lang-badge{ margin-bottom:8px; }
+    .lang-sub{ margin-bottom:20px; }
+    .lang-card{ padding:12px 18px; }
+    .lang-note{ margin-top:14px; }
+  }
+  @media (max-height:820px){
+    .cover-logo{ width:64px; height:64px; margin-bottom:12px; }
+    .cover-card .q-big{ font-size:clamp(24px,3.2vw,32px); margin-bottom:16px; }
+    .cover-sub{ margin-bottom:20px; font-size:15px; }
+    [data-multi] .q-big{ font-size:clamp(20px,2.6vw,26px); margin-bottom:12px; }
+    [data-multi] .q-hint{ margin:-4px auto 12px auto; }
+    [data-multi] .choice-list{ gap:6px; }
+    [data-multi] .choice-btn{ padding:8px 14px; font-size:13.5px; }
+    [data-multi] .choice-other{ margin-top:6px; padding:6px; }
+    [data-multi] .screen-actions{ margin-top:12px; gap:8px; }
+    .screen-actions{ margin-top:20px; }
+  }
+  /* benefits: wider machine, options in two columns */
+  .screen[data-multi]{ max-width:min(920px, 100%); }
+  @media (min-width:760px){
+    [data-multi] .choice-list{ display:grid; grid-template-columns:1fr 1fr; }
+    [data-multi] .choice-btn{ display:flex; align-items:center; min-height:100%; }
+    [data-multi] .choice-other{ max-width:560px; display:block; margin-left:auto; margin-right:auto; }
+  }
+  @media (max-height:780px){
+    .q-textarea{ min-height:64px; }
+    .q-hint{ margin-top:-14px; margin-bottom:18px; }
+    .card-inner{ padding:26px 28px; }
+    .q-big{ margin-bottom:24px; }
+    .stage{ padding:24px 40px; }
+  }
+  @media (max-width:640px){
+    .topbar{ height:56px; padding:0 16px; }
+    .bottombar{ height:56px; padding:0 16px; }
+    .badge-wrap img{ height:48px; }
+    .topbar .step-counter{ display:none; }
+    .stage{ padding:20px 14px; }
+    .bottombar .btn{ padding:9px 14px; font-size:13px; }
+    .dots{ flex-wrap:nowrap; gap:4px; }
+    .dot{ width:6px; height:6px; }
+    [data-screen="final"] .recap-list{ max-height:clamp(150px, calc(100dvh - 470px), 640px); }
+    [data-screen="final"] .final-actions{ flex-direction:column; gap:8px; }
+    [data-screen="final"] .recap-row{ flex-direction:row; gap:10px; }
+    [data-screen="final"] .recap-row .ra{ text-align:right; max-width:42%; }
+  }
 </style>
 </head>
 <body>
@@ -524,12 +655,19 @@
     <span class="glyph diamond">💎</span>
     <span class="glyph bell">🔔</span>
   </div>
-  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-  <div class="brand-mark">
-    <img src="picshot-logo.png" alt="PicShot Studio" onerror="this.style.display='none';">
+  <div class="topbar">
+    <span class="badge-wrap">
+      <img src="picshot-logo.png" alt="PicShot Studio" class="badge-img" onerror="this.style.display='none';">
+    </span>
+    <div class="top-right">
+      <span class="step-counter" id="stepCounter"></span>
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-lang-btn="en" onclick="setLang('en')">EN</button>
+        <button type="button" data-lang-btn="uk" onclick="setLang('uk')">UA</button>
+        <button type="button" data-lang-btn="ru" onclick="setLang('ru')">RU</button>
+      </div>
+    </div>
   </div>
-  <div class="step-counter" id="stepCounter"></div>
-  <button class="back-arrow" id="backArrow" onclick="prevScreen()" aria-label="Back">←</button>
 
   <!-- Handle template, cloned onto every cabinet below so the lever is
        physically part of the machine frame, not a separate floating
@@ -551,7 +689,37 @@
     </defs>
   </svg>
 
-  <div class="stage">
+  <div class="stage" id="stage">
+    <!-- Language picker (shown until a language is chosen) -->
+    <section class="lang-screen" id="langScreen">
+      <div class="lang-hero">
+        <div class="lang-badge"><img src="picshot-logo.png" alt="PicShot Studio" class="badge-img" onerror="this.style.display='none';"></div>
+        <h1 class="lang-greet" aria-label="Welcome">
+          <span class="greet-reel" aria-hidden="true">
+            <span>Welcome</span><span>Вітаємо</span><span>Добро пожаловать</span><span>Welcome</span>
+          </span>
+        </h1>
+        <p class="lang-sub">Choose your language <i>·</i> Оберіть мову <i>·</i> Выберите язык</p>
+        <div class="lang-list">
+          <button type="button" class="lang-card" onclick="pickLang('en')">
+            <span class="lang-code">EN</span>
+            <span class="lang-text"><span class="lang-name">English</span><span class="lang-cta">Continue in English</span></span>
+            <span class="lang-go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </button>
+          <button type="button" class="lang-card" onclick="pickLang('uk')">
+            <span class="lang-code">UA</span>
+            <span class="lang-text"><span class="lang-name">Українська</span><span class="lang-cta">Продовжити українською</span></span>
+            <span class="lang-go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </button>
+          <button type="button" class="lang-card" onclick="pickLang('ru')">
+            <span class="lang-code">RU</span>
+            <span class="lang-text"><span class="lang-name">Русский</span><span class="lang-cta">Продолжить на русском</span></span>
+            <span class="lang-go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </button>
+        </div>
+        <p class="lang-note" data-i18n="lang_note">You can switch the language at any time in the top corner.</p>
+      </div>
+    </section>
     <!-- 0: Cover -->
     <section class="screen active" data-screen="cover">
       <div class="cabinet">
@@ -566,10 +734,10 @@
                  onload="this.style.display='block'; document.getElementById('coverLogoPlaceholder').style.display='none';"
                  onerror="this.style.display='none';">
           </div>
-          <span class="q-kicker">PicShot Studio · Client Feedback</span>
-          <h1 class="q-big">Rate your <span class="accent">Long-Term Contract</span> experience</h1>
-          <p class="cover-sub">We&rsquo;d love to hear your feedback about our cooperation under the Long-Term Contract. Your opinion will help us understand what works well and how we can make our partnership even better.</p>
-          <button class="btn btn-primary" onclick="nextScreen()">Spin to Begin →</button>
+          <span class="q-kicker" data-i18n="cover_kicker">PicShot Studio · Client Feedback</span>
+          <h1 class="q-big" data-i18n="cover_title">Rate your <span class="accent">Long-Term Contract</span> experience</h1>
+          <p class="cover-sub" data-i18n="cover_sub">We&rsquo;d love to hear your feedback about our cooperation under the Long-Term Contract. Your opinion will help us understand what works well and how we can make our partnership even better.</p>
+          <button class="btn btn-primary" onclick="nextScreen()" data-i18n="cover_btn">Spin to Begin →</button>
         </div>
       </div>
     </section>
@@ -578,8 +746,8 @@
     <section class="screen" data-screen="scale" data-key="value_benefit" data-cat="Value" data-low="Not valuable at all" data-high="Extremely valuable">
       <div class="cabinet"><div class="bulbs"></div>
         <div class="card">
-          <span class="q-kicker">Value</span>
-          <h1 class="q-big">How valuable and beneficial have the Long-Term Contract and its terms been for you?</h1>
+          <span class="q-kicker" data-i18n="cat_value">Value</span>
+          <h1 class="q-big" data-i18n="q_value_benefit">How valuable and beneficial have the Long-Term Contract and its terms been for you?</h1>
           <div class="scale-big"></div>
           <div class="scale-endlabels"></div>
         </div>
@@ -590,8 +758,8 @@
     <section class="screen" data-screen="scale" data-key="time_resources" data-cat="Efficiency" data-low="Not at all" data-high="To a great extent">
       <div class="cabinet"><div class="bulbs"></div>
         <div class="card">
-          <span class="q-kicker">Efficiency</span>
-          <h1 class="q-big">To what extent has the Long-Term Contract helped you optimize your time and resources?</h1>
+          <span class="q-kicker" data-i18n="cat_eff">Efficiency</span>
+          <h1 class="q-big" data-i18n="q_time_resources">To what extent has the Long-Term Contract helped you optimize your time and resources?</h1>
           <div class="scale-big"></div>
           <div class="scale-endlabels"></div>
         </div>
@@ -602,8 +770,8 @@
     <section class="screen" data-screen="scale" data-key="team_comfort" data-cat="Collaboration" data-low="Very uncomfortable" data-high="Extremely comfortable">
       <div class="cabinet"><div class="bulbs"></div>
         <div class="card">
-          <span class="q-kicker">Collaboration</span>
-          <h1 class="q-big">How comfortable has your experience working with our team been under the Long-Term Contract?</h1>
+          <span class="q-kicker" data-i18n="cat_collab">Collaboration</span>
+          <h1 class="q-big" data-i18n="q_team_comfort">How comfortable has your experience working with our team been under the Long-Term Contract?</h1>
           <div class="scale-big"></div>
           <div class="scale-endlabels"></div>
         </div>
@@ -614,8 +782,8 @@
     <section class="screen" data-screen="scale" data-key="pm_quality" data-cat="Project Management" data-low="Very poor" data-high="Excellent">
       <div class="cabinet"><div class="bulbs"></div>
         <div class="card">
-          <span class="q-kicker">Project Management</span>
-          <h1 class="q-big">How would you rate the quality of Project Management throughout our cooperation under the Long-Term Contract?</h1>
+          <span class="q-kicker" data-i18n="cat_pm">Project Management</span>
+          <h1 class="q-big" data-i18n="q_pm_quality">How would you rate the quality of Project Management throughout our cooperation under the Long-Term Contract?</h1>
           <div class="scale-big"></div>
           <div class="scale-endlabels"></div>
         </div>
@@ -626,8 +794,8 @@
     <section class="screen" data-screen="scale" data-key="workflow" data-cat="Collaboration" data-low="Not effectively at all" data-high="Extremely effectively">
       <div class="cabinet"><div class="bulbs"></div>
         <div class="card">
-          <span class="q-kicker">Collaboration</span>
-          <h1 class="q-big">How effectively have we adapted our workflow to your needs?</h1>
+          <span class="q-kicker" data-i18n="cat_collab">Collaboration</span>
+          <h1 class="q-big" data-i18n="q_workflow">How effectively have we adapted our workflow to your needs?</h1>
           <div class="scale-big"></div>
           <div class="scale-endlabels"></div>
         </div>
@@ -638,8 +806,8 @@
     <section class="screen" data-screen="scale" data-key="expectations" data-cat="Overall Impression" data-low="Not at all" data-high="Fully met my expectations">
       <div class="cabinet"><div class="bulbs"></div>
         <div class="card">
-          <span class="q-kicker">Overall Impression</span>
-          <h1 class="q-big">To what extent has the Long-Term Contract met your expectations?</h1>
+          <span class="q-kicker" data-i18n="cat_overall">Overall Impression</span>
+          <h1 class="q-big" data-i18n="q_expectations">To what extent has the Long-Term Contract met your expectations?</h1>
           <div class="scale-big"></div>
           <div class="scale-endlabels"></div>
         </div>
@@ -650,14 +818,14 @@
     <section class="screen" data-screen="choice" data-multi="1" data-key="benefits" data-cat="Benefits">
       <div class="cabinet"><div class="bulbs"></div>
         <div class="card">
-          <span class="q-kicker">Benefits</span>
-          <h1 class="q-big">What benefits of the Long-Term Contract have you noticed the most?</h1>
-          <p class="q-hint">Select all that apply.</p>
+          <span class="q-kicker" data-i18n="cat_benefits">Benefits</span>
+          <h1 class="q-big" data-i18n="q_benefits">What benefits of the Long-Term Contract have you noticed the most?</h1>
+          <p class="q-hint" data-i18n="hint_multi">Select all that apply.</p>
           <div class="choice-list"></div>
-          <input class="q-input choice-other" type="text" placeholder="Something else? Tell us (optional)">
+          <input class="q-input choice-other" type="text" placeholder="Something else? Tell us (optional)" data-i18n-ph="ph_other">
           <div class="screen-actions">
-            <button class="btn btn-primary" onclick="nextScreen()">Continue →</button>
-            <button class="skip-link" onclick="nextScreen()">Skip this question</button>
+            <button class="btn btn-primary" onclick="nextScreen()" data-i18n="continue">Continue →</button>
+            <button class="skip-link" onclick="nextScreen()" data-i18n="skip">Skip this question</button>
           </div>
         </div>
       </div>
@@ -667,13 +835,13 @@
     <section class="screen" data-screen="text" data-key="improvements" data-cat="Suggestions">
       <div class="cabinet"><div class="bulbs"></div>
         <div class="card">
-          <span class="q-kicker">Suggestions</span>
-          <h1 class="q-big">What would you like us to improve in our cooperation or add to the Long-Term Contract terms?</h1>
-          <p class="q-hint">We&rsquo;d appreciate any suggestions, recommendations, or additional comments. Nothing to add? Feel free to skip this question.</p>
-          <textarea class="q-textarea" placeholder="Type your thoughts… (optional)"></textarea>
+          <span class="q-kicker" data-i18n="cat_sugg">Suggestions</span>
+          <h1 class="q-big" data-i18n="q_improvements">What would you like us to improve in our cooperation or add to the Long-Term Contract terms?</h1>
+          <p class="q-hint" data-i18n="hint_impr">We&rsquo;d appreciate any suggestions, recommendations, or additional comments. Nothing to add? Feel free to skip this question.</p>
+          <textarea class="q-textarea" placeholder="Type your thoughts… (optional)" data-i18n-ph="ph_comment"></textarea>
           <div class="screen-actions">
-            <button class="btn btn-primary" onclick="nextScreen()">Continue →</button>
-            <button class="skip-link" onclick="nextScreen()">Nothing to add — skip</button>
+            <button class="btn btn-primary" onclick="nextScreen()" data-i18n="continue">Continue →</button>
+            <button class="skip-link" onclick="nextScreen()" data-i18n="skip_nothing">Nothing to add — skip</button>
           </div>
         </div>
       </div>
@@ -683,11 +851,11 @@
     <section class="screen" data-screen="name">
       <div class="cabinet"><div class="bulbs"></div>
         <div class="card">
-          <span class="q-kicker">Almost done</span>
-          <h1 class="q-big">Last thing — tell us your company name or contact person</h1>
-          <input class="q-input" id="clientName" type="text" placeholder="Company name or contact person" required>
+          <span class="q-kicker" data-i18n="cat_almost">Almost done</span>
+          <h1 class="q-big" data-i18n="name_title">Last thing — tell us your company name or contact person</h1>
+          <input class="q-input" id="clientName" type="text" placeholder="Company name or contact person" data-i18n-ph="ph_name" required>
           <div class="screen-actions">
-            <button class="btn btn-primary" onclick="submitName()">Continue →</button>
+            <button class="btn btn-primary" onclick="submitName()" data-i18n="continue">Continue →</button>
           </div>
         </div>
       </div>
@@ -714,18 +882,26 @@
           <div class="thanks-icon">
             <svg viewBox="0 0 36 36" aria-hidden="true"><path d="M7 19 l7 7 L29 11" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
-          <h1 class="q-big" id="finalHeading" style="margin-bottom:6px;">Thank you for being our long-term partner — we&rsquo;re always ready to create something new and amazing together!</h1>
+          <h1 class="q-big" id="finalHeading" style="margin-bottom:6px;" data-i18n="final_heading">Thank you for being our long-term partner — we&rsquo;re always ready to create something new and amazing together!</h1>
           <div class="ticket" style="margin-top:22px;">
-            <div class="ticket-head"><span>PicShot Studio</span><span>Feedback Ticket</span></div>
+            <div class="ticket-head"><span>PicShot Studio</span><span data-i18n="ticket">Feedback Ticket</span></div>
             <div class="recap-list" id="recapList"></div>
           </div>
           <div class="final-actions">
-            <button class="btn btn-primary" id="sendBtn" onclick="sendToUs()">✉ Send Feedback</button>
-            <button class="skip-link" onclick="restartSurvey()">Start over</button>
+            <button class="btn btn-primary" id="sendBtn" onclick="sendToUs()" data-i18n="send">✉ Send Feedback</button>
+            <button class="skip-link" onclick="restartSurvey()" data-i18n="restart">Start over</button>
           </div>
         </div>
       </div>
     </section>
+  </div>
+
+  <div class="bottombar">
+    <div class="dots" id="dots"></div>
+    <div class="nav-btns">
+      <button class="btn btn-secondary" id="backBtn" onclick="prevScreen()" data-i18n="nav_back">← Back</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="navNext()" data-i18n="nav_next">Next →</button>
+    </div>
   </div>
 
   <!-- Success modal -->
@@ -734,9 +910,9 @@
       <div class="modal-icon">
         <svg viewBox="0 0 36 36" aria-hidden="true"><path d="M7 19 l7 7 L29 11" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
-      <h2>Thank you!</h2>
-      <p>We really appreciate you taking the time to share your feedback — it genuinely helps us get better.</p>
-      <button class="btn btn-primary" onclick="document.getElementById('successModal').classList.remove('show')">You&rsquo;re welcome!</button>
+      <h2 data-i18n="ok_title">Thank you!</h2>
+      <p data-i18n="ok_text">We really appreciate you taking the time to share your feedback — it genuinely helps us get better.</p>
+      <button class="btn btn-primary" onclick="document.getElementById('successModal').classList.remove('show')" data-i18n="ok_btn">You&rsquo;re welcome!</button>
     </div>
   </div>
 
@@ -910,7 +1086,7 @@
       wrap.appendChild(b);
     }
     const endEl = s.querySelector('.scale-endlabels');
-    endEl.innerHTML = '<span>' + s.dataset.low + '</span><span>' + s.dataset.high + '</span>';
+    endEl.innerHTML = '<span data-low="' + s.dataset.low + '">' + s.dataset.low + '</span><span data-low="' + s.dataset.high + '">' + s.dataset.high + '</span>';
 
     // Low-rating follow-up: optional explanation field, shown only once the
     // client picks a 1-3 score on this particular question.
@@ -919,7 +1095,7 @@
     note.innerHTML =
       '<label class="lrn-label">We&rsquo;re sorry to hear that — what happened? Help us get better</label>' +
       '<textarea class="q-textarea lrn-textarea" placeholder="Tell us more…"></textarea>' +
-      '<div class="screen-actions"><button type="button" class="btn btn-primary lrn-continue">Continue →</button></div>';
+      '<div class="screen-actions"><button type="button" class="btn btn-primary lrn-continue" data-i18n="continue">Continue →</button></div>';
     endEl.insertAdjacentElement('afterend', note);
     const lrnTextarea = note.querySelector('.lrn-textarea');
     lrnTextarea.addEventListener('input', ()=>{ state.lowRatingNotes[key] = lrnTextarea.value.trim(); });
@@ -936,6 +1112,7 @@
       b.type = 'button';
       b.className = 'choice-btn';
       b.textContent = optText;
+      b.dataset.v = optText;   /* English value — what is sent to the sheet */
       b.addEventListener('click', ()=> selectChoice(s, key, optText, b));
       wrap.appendChild(b);
     });
@@ -1026,7 +1203,7 @@
 
   /* multi-select choice screens (data-multi): toggle options, no auto-advance */
   function collectMulti(screenEl){
-    const picks = [...screenEl.querySelectorAll('.choice-btn.selected')].map(b => b.textContent);
+    const picks = [...screenEl.querySelectorAll('.choice-btn.selected')].map(b => b.dataset.v || b.textContent);
     const other = screenEl.querySelector('.choice-other');
     if(other && other.value.trim()) picks.push(other.value.trim());
     state[screenEl.dataset.key] = picks.join('; ');
@@ -1047,13 +1224,21 @@
     setTimeout(()=>{ if(screens[current] === screenEl) nextScreen(); }, 420);
   }
 
+  const dotsEl = document.getElementById('dots');
+  screens.forEach(() => { const d = document.createElement('span'); d.className = 'dot'; dotsEl.appendChild(d); });
   function updateChrome(){
-    const pct = TOTAL <= 1 ? 0 : Math.round((current / (TOTAL - 1)) * 100);
-    document.getElementById('progressFill').style.width = pct + '%';
     const step = document.getElementById('stepCounter');
     const kind = screens[current].dataset.screen;
     step.textContent = (kind === 'cover' || kind === 'final') ? '' : (current + ' / ' + (TOTAL - 2));
-    document.getElementById('backArrow').classList.toggle('show', current > 0 && kind !== 'final');
+    [...dotsEl.children].forEach((d, i) => { d.classList.toggle('active', i === current); d.classList.toggle('done', i < current); });
+    const back = document.getElementById('backBtn'), next = document.getElementById('nextBtn');
+    back.style.display = (current > 0 && kind !== 'final') ? '' : 'none';
+    next.style.display = (kind === 'cover' || kind === 'final') ? 'none' : '';
+    const st = document.getElementById('stage'); if(st) st.scrollTop = 0;
+  }
+  /* "Next" in the footer: the name screen still checks the required field */
+  function navNext(){
+    if(screens[current].dataset.screen === 'name') submitName(); else nextScreen();
   }
 
   /* ---------- Dispatcher: the reel spin is a one-time "start the machine"
@@ -1336,23 +1521,24 @@
       let shown;
       if(q.type === 'scale'){
         if(val === null || val === undefined){
-          shown = '<span class="ra muted">Skipped</span>';
+          shown = '<span class="ra muted">' + t('skipped') + '</span>';
         } else if(typeof val === 'string'){
           // e.g. the "art only" N/A note on the animation question
-          shown = '<span class="ra muted">' + escapeHtml(val) + '</span>';
+          shown = '<span class="ra muted">' + escapeHtml(val.startsWith('N/A') ? t('naShown') : val) + '</span>';
         } else {
           shown = '<span class="ra">' + val + '/5</span>';
         }
       } else {
-        const emptyLabel = q.type === 'choice' ? 'Skipped' : 'No comment';
-        shown = val ? '<span class="ra">' + escapeHtml(val) + '</span>' : '<span class="ra muted">' + emptyLabel + '</span>';
+        const emptyLabel = q.type === 'choice' ? t('skipped') : t('noComment');
+        const shownVal = q.type === 'choice' ? choiceText(q.key, val) : val;
+        shown = val ? '<span class="ra">' + escapeHtml(shownVal) + '</span>' : '<span class="ra muted">' + emptyLabel + '</span>';
       }
-      row.innerHTML = '<span class="rq">' + escapeHtml(q.label) + '</span>' + shown;
+      row.innerHTML = '<span class="rq">' + escapeHtml(qLabel(q)) + '</span>' + shown;
       list.appendChild(row);
     });
     // Heading stays generic on purpose — the company name / contact person
     // is only used internally (ticket + email), never echoed back on screen.
-    document.getElementById('finalHeading').textContent = 'Thank you for being our long-term partner — we’re always ready to create something new and amazing together!';
+    /* final heading text comes from the current language (see setLang) */
   }
 
   /* Confetti shower on arrival at the final "you win" screen */
@@ -1436,7 +1622,7 @@
       const clientName = (document.getElementById('clientName').value || '').trim();
       btn.disabled = true;
       const original = btn.textContent;
-      btn.textContent = 'Sending…';
+      btn.textContent = t('sending');
       try{
         const payload = { company: clientName };
         QUESTIONS.forEach(q => {
@@ -1452,12 +1638,12 @@
           }
         });
         await fetch(SHEETS_ENDPOINT, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams(payload) });
-        btn.textContent = '✓ Sent — thank you!';
+        btn.textContent = t('sent');
         document.getElementById('successModal').classList.add('show');
       }catch(err){
         btn.textContent = original;
         btn.disabled = false;
-        alert('Could not send right now. Please check your internet connection and try again.');
+        alert(t('sendError'));
       }
       return;
     }
@@ -1468,6 +1654,235 @@
     document.getElementById('successModal').classList.add('show');
   }
 
+
+  /* =====================================================================
+     LANGUAGES — English is written in the page; UA / RU below.
+     Answers sent to the sheet and email always stay in English.
+     ===================================================================== */
+  const I18N = {
+ "uk": {
+  "q_value_benefit": "Наскільки цінним і вигідним для вас був довгостроковий контракт та його умови?",
+  "q_time_resources": "Наскільки довгостроковий контракт допоміг вам оптимізувати час і ресурси?",
+  "q_team_comfort": "Наскільки комфортно вам працювалося з нашою командою в межах довгострокового контракту?",
+  "q_pm_quality": "Як ви оцінюєте якість проджект-менеджменту протягом нашої співпраці за довгостроковим контрактом?",
+  "q_workflow": "Наскільки ефективно ми адаптували робочий процес під ваші потреби?",
+  "q_expectations": "Наскільки довгостроковий контракт виправдав ваші очікування?",
+  "q_benefits": "Які переваги довгострокового контракту ви помітили найбільше?",
+  "q_improvements": "Що б ви хотіли покращити в нашій співпраці або додати до умов довгострокового контракту?",
+  "cover_kicker": "PicShot Studio · Відгук клієнта",
+  "cover_title": "Оцініть співпрацю за <span class=\"accent\">довгостроковим контрактом</span>",
+  "cover_sub": "Нам важливо почути ваш відгук про співпрацю за довгостроковим контрактом. Ваша думка допоможе зрозуміти, що працює добре і як зробити наше партнерство ще кращим.",
+  "cover_btn": "Запустити барабан →",
+  "cat_value": "Цінність",
+  "cat_eff": "Ефективність",
+  "cat_collab": "Співпраця",
+  "cat_pm": "Проджект-менеджмент",
+  "cat_overall": "Загальне враження",
+  "cat_benefits": "Переваги",
+  "cat_sugg": "Побажання",
+  "cat_almost": "Майже готово",
+  "hint_multi": "Можна обрати кілька варіантів.",
+  "hint_impr": "Будемо вдячні за будь-які пропозиції, рекомендації чи коментарі. Нічого додати? Сміливо пропускайте це питання.",
+  "continue": "Далі →",
+  "skip": "Пропустити питання",
+  "skip_nothing": "Нічого додати — пропустити",
+  "name_title": "І останнє — вкажіть назву компанії або контактну особу",
+  "final_heading": "Дякуємо, що ви наш довгостроковий партнер — ми завжди готові разом створювати щось нове й неймовірне!",
+  "ticket": "Квиток відгуку",
+  "send": "✉ Надіслати відгук",
+  "restart": "Почати спочатку",
+  "ok_title": "Дякуємо!",
+  "ok_text": "Дуже цінуємо, що ви знайшли час поділитися відгуком — це справді допомагає нам ставати кращими.",
+  "ok_btn": "Будь ласка!",
+  "nav_back": "← Назад",
+  "nav_next": "Далі →",
+  "lang_note": "Змінити мову можна будь-коли у верхньому куті.",
+  "ph_comment": "Напишіть свої думки… (необовʼязково)",
+  "ph_name": "Назва компанії або контактна особа",
+  "ph_other": "Щось інше? Розкажіть нам (необовʼязково)"
+ },
+ "ru": {
+  "q_value_benefit": "Насколько ценным и выгодным для вас был долгосрочный контракт и его условия?",
+  "q_time_resources": "Насколько долгосрочный контракт помог вам оптимизировать время и ресурсы?",
+  "q_team_comfort": "Насколько комфортно вам работалось с нашей командой в рамках долгосрочного контракта?",
+  "q_pm_quality": "Как вы оцениваете качество проджект-менеджмента на протяжении нашего сотрудничества по долгосрочному контракту?",
+  "q_workflow": "Насколько эффективно мы адаптировали рабочий процесс под ваши потребности?",
+  "q_expectations": "Насколько долгосрочный контракт оправдал ваши ожидания?",
+  "q_benefits": "Какие преимущества долгосрочного контракта вы заметили больше всего?",
+  "q_improvements": "Что бы вы хотели улучшить в нашем сотрудничестве или добавить в условия долгосрочного контракта?",
+  "cover_kicker": "PicShot Studio · Отзыв клиента",
+  "cover_title": "Оцените сотрудничество по <span class=\"accent\">долгосрочному контракту</span>",
+  "cover_sub": "Нам важно услышать ваш отзыв о сотрудничестве по долгосрочному контракту. Ваше мнение поможет понять, что работает хорошо и как сделать наше партнёрство ещё лучше.",
+  "cover_btn": "Запустить барабан →",
+  "cat_value": "Ценность",
+  "cat_eff": "Эффективность",
+  "cat_collab": "Сотрудничество",
+  "cat_pm": "Проджект-менеджмент",
+  "cat_overall": "Общее впечатление",
+  "cat_benefits": "Преимущества",
+  "cat_sugg": "Пожелания",
+  "cat_almost": "Почти готово",
+  "hint_multi": "Можно выбрать несколько вариантов.",
+  "hint_impr": "Будем благодарны за любые предложения, рекомендации или комментарии. Нечего добавить? Смело пропускайте этот вопрос.",
+  "continue": "Далее →",
+  "skip": "Пропустить вопрос",
+  "skip_nothing": "Нечего добавить — пропустить",
+  "name_title": "И последнее — укажите название компании или контактное лицо",
+  "final_heading": "Спасибо, что вы наш долгосрочный партнёр — мы всегда готовы вместе создавать что-то новое и потрясающее!",
+  "ticket": "Билет отзыва",
+  "send": "✉ Отправить отзыв",
+  "restart": "Начать заново",
+  "ok_title": "Спасибо!",
+  "ok_text": "Очень ценим, что вы нашли время поделиться отзывом — это действительно помогает нам становиться лучше.",
+  "ok_btn": "Пожалуйста!",
+  "nav_back": "← Назад",
+  "nav_next": "Далее →",
+  "lang_note": "Сменить язык можно в любой момент в верхнем углу.",
+  "ph_comment": "Напишите свои мысли… (необязательно)",
+  "ph_name": "Название компании или контактное лицо",
+  "ph_other": "Что-то другое? Расскажите нам (необязательно)"
+ }
+};
+  const JS_TEXT = {
+ "en": {
+  "low_Not valuable at all": "Not valuable at all",
+  "low_Extremely valuable": "Extremely valuable",
+  "low_Not at all": "Not at all",
+  "low_To a great extent": "To a great extent",
+  "low_Very uncomfortable": "Very uncomfortable",
+  "low_Extremely comfortable": "Extremely comfortable",
+  "low_Very poor": "Very poor",
+  "low_Excellent": "Excellent",
+  "low_Not effectively at all": "Not effectively at all",
+  "low_Extremely effectively": "Extremely effectively",
+  "low_Fully met my expectations": "Fully met my expectations",
+  "lrn_label": "We’re sorry to hear that — what happened? Help us get better",
+  "lrn_ph": "Tell us more…",
+  "skipped": "Skipped",
+  "noComment": "No comment",
+  "naShown": "N/A",
+  "sending": "Sending…",
+  "sent": "✓ Sent — thank you!",
+  "sendError": "Could not send right now. Please check your internet connection and try again."
+ },
+ "uk": {
+  "low_Not valuable at all": "Зовсім не цінний",
+  "low_Extremely valuable": "Дуже цінний",
+  "low_Not at all": "Зовсім ні",
+  "low_To a great extent": "Значною мірою",
+  "low_Very uncomfortable": "Дуже некомфортно",
+  "low_Extremely comfortable": "Дуже комфортно",
+  "low_Very poor": "Дуже погано",
+  "low_Excellent": "Чудово",
+  "low_Not effectively at all": "Зовсім неефективно",
+  "low_Extremely effectively": "Дуже ефективно",
+  "low_Fully met my expectations": "Повністю виправдав",
+  "lrn_label": "Шкода це чути — що сталося? Допоможіть нам стати кращими",
+  "lrn_ph": "Розкажіть детальніше…",
+  "skipped": "Пропущено",
+  "noComment": "Без коментаря",
+  "naShown": "—",
+  "sending": "Надсилаємо…",
+  "sent": "✓ Надіслано — дякуємо!",
+  "sendError": "Не вдалося надіслати. Перевірте підключення до інтернету та спробуйте ще раз."
+ },
+ "ru": {
+  "low_Not valuable at all": "Совсем не ценный",
+  "low_Extremely valuable": "Очень ценный",
+  "low_Not at all": "Совсем нет",
+  "low_To a great extent": "В значительной степени",
+  "low_Very uncomfortable": "Очень некомфортно",
+  "low_Extremely comfortable": "Очень комфортно",
+  "low_Very poor": "Очень плохо",
+  "low_Excellent": "Отлично",
+  "low_Not effectively at all": "Совсем неэффективно",
+  "low_Extremely effectively": "Очень эффективно",
+  "low_Fully met my expectations": "Полностью оправдал",
+  "lrn_label": "Жаль это слышать — что случилось? Помогите нам стать лучше",
+  "lrn_ph": "Расскажите подробнее…",
+  "skipped": "Пропущено",
+  "noComment": "Без комментария",
+  "naShown": "—",
+  "sending": "Отправляем…",
+  "sent": "✓ Отправлено — спасибо!",
+  "sendError": "Не удалось отправить. Проверьте подключение к интернету и попробуйте ещё раз."
+ }
+};
+  const CHOICE_I18N = {
+ "uk": {
+  "benefits": [
+   "Закріплена команда, яка вже знає наш стиль і пайплайн",
+   "Гарантована доступність команди і пріоритет у плануванні",
+   "Швидший старт проєктів без повторного онбордингу",
+   "Прогнозований бюджет і вигідніші ціни",
+   "Простіше довгострокове планування",
+   "Стабільна якість на всіх проєктах",
+   "Менше часу на брифи, пояснення та погодження"
+  ]
+ },
+ "ru": {
+  "benefits": [
+   "Закреплённая команда, которая уже знает наш стиль и пайплайн",
+   "Гарантированная доступность команды и приоритет в планировании",
+   "Более быстрый старт проектов без повторного онбординга",
+   "Прогнозируемый бюджет и более выгодные цены",
+   "Более простое долгосрочное планирование",
+   "Стабильное качество на всех проектах",
+   "Меньше времени на брифы, объяснения и согласования"
+  ]
+ }
+};
+  let LANG = 'en';
+  const EN_TEXT = {}, EN_PH = {};
+  document.querySelectorAll('[data-i18n]').forEach(el => { if(!(el.dataset.i18n in EN_TEXT)) EN_TEXT[el.dataset.i18n] = el.innerHTML; });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { EN_PH[el.dataset.i18nPh] = el.getAttribute('placeholder'); });
+  function t(key){ return (JS_TEXT[LANG] && JS_TEXT[LANG][key]) || JS_TEXT.en[key] || key; }
+  function htmlToText(s){ const d = document.createElement('div'); d.innerHTML = s; return d.textContent; }
+  function qLabel(q){
+    const k = 'q_' + q.key;
+    return LANG === 'en' || !I18N[LANG][k] ? q.label : htmlToText(I18N[LANG][k]);
+  }
+  function choiceText(key, value){
+    const en = CHOICE_OPTIONS[key] || [];
+    const tr = LANG !== 'en' && CHOICE_I18N[LANG] && CHOICE_I18N[LANG][key];
+    if(!tr || !value) return value;
+    return String(value).split('; ').map(v => { const i = en.indexOf(v); return i >= 0 ? tr[i] : v; }).join('; ');
+  }
+  function setLang(lang){
+    if(lang === 'ua') lang = 'uk';
+    if(!['en','uk','ru'].includes(lang)) lang = 'en';
+    LANG = lang;
+    document.documentElement.lang = lang;
+    const d = I18N[lang] || {};
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const k = el.dataset.i18n;
+      el.innerHTML = lang === 'en' ? EN_TEXT[k] : (d[k] || EN_TEXT[k]);
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+      const k = el.dataset.i18nPh;
+      el.setAttribute('placeholder', lang === 'en' ? EN_PH[k] : (d[k] || EN_PH[k]));
+    });
+    document.querySelectorAll('.scale-endlabels [data-low]').forEach(el => { el.textContent = t('low_' + el.dataset.low); });
+    document.querySelectorAll('.lrn-label').forEach(el => { el.textContent = t('lrn_label'); });
+    document.querySelectorAll('.lrn-textarea').forEach(el => { el.setAttribute('placeholder', t('lrn_ph')); });
+    document.querySelectorAll('.lrn-continue').forEach(b => { b.textContent = lang === 'en' ? EN_TEXT['continue'] : (d['continue'] || EN_TEXT['continue']); });
+    document.querySelectorAll('.choice-btn').forEach(b => { b.textContent = choiceText(b.closest('.screen').dataset.key, b.dataset.v); });
+    document.querySelectorAll('[data-lang-btn]').forEach(b => b.classList.toggle('active', b.dataset.langBtn === lang));
+    document.querySelectorAll('.lang-card').forEach(c => c.classList.toggle('current', c.getAttribute('onclick') === "pickLang('" + lang + "')"));
+    try{ localStorage.setItem('picshot_lang', lang); }catch(e){}
+    if(screens[current] && screens[current].dataset.screen === 'final') renderRecap();
+  }
+  function pickLang(lang){
+    setLang(lang);
+    document.body.classList.remove('picking');
+    updateChrome();
+  }
+  (function initLang(){
+    let saved = null;
+    try{ saved = new URLSearchParams(location.search).get('lang') || localStorage.getItem('picshot_lang'); }catch(e){}
+    setLang(saved || 'en');
+    if(!saved) document.body.classList.add('picking');
+  })();
   updateChrome();
 </script>
 </body>
